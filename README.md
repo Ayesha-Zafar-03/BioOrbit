@@ -1,114 +1,138 @@
-# 🚀 BioOrbit: Space Biology Knowledge Engine
+# BioOrbit — NASA Space Biology Studies
 
-**BioOrbit** is an AI-powered dashboard built for **NASA’s HackHers challenge: “Enable a new era of human space exploration!”**  
-Our mission was to create a dynamic knowledge engine that helps users explore decades of NASA’s space biology research—making it accessible, insightful, and actionable as humanity prepares to revisit the Moon and venture to Mars.
-
----
-
-## 🌌 Challenge Overview
-
-NASA has conducted thousands of biology experiments in space, generating a vast trove of bioscience publications.  
-While this data is publicly available, it’s often difficult to navigate and extract relevant insights.  
-
-Our challenge was to:
-
-> 🔬 Build a dynamic dashboard using AI, knowledge graphs, and other tools to summarize NASA bioscience publications and help users explore the impacts and results of space biology experiments.
-
-This project was developed under NASA’s Earth Science Division during the **HackHers hackathon**.
+> **Explore NASA’s 608 Space Biology studies online with AI-powered summarization (Streamlit)**  
+>
+> * Data: NASA Space Biology Publication Dataset (608 studies)  
+> * Features: AI-generated summaries, quick search, article-level insights  
+> * Infra: Streamlit Cloud (serverless)  
+> * CI/CD: GitHub Actions for deployment
 
 ---
 
-## 🧠 What BioOrbit Does
+## ✨ Features
 
-- 📚 **Summarizes** NASA bioscience publications using NLP and vector embeddings  
-- 🔍 **Enables semantic search** for research relevance  
-- 📊 **Visualizes biological trends** and experiment outcomes  
-- ⚡ **Accelerates discovery** with caching for enriched summaries  
-
----
-
-## 🧬 Key Features
-
-- **Abstract Fetching:** Pulls data from NASA’s space biology dataset  
-- **AI Enrichment:** Uses NLP to summarize and enhance publication abstracts  
-- **Knowledge Graph Integration (Planned):** Maps relationships between experiments, organisms, and outcomes  
-- **Interactive Dashboard:** Clean, responsive Streamlit interface  
-- **Smart Caching:** Stores enriched summaries for instant reloading  
+* 🔎 **Search NASA studies** by keyword: microgravity, plant biology, stem cells, etc.  
+* 📝 **AI summaries** of full articles with character count and source info  
+* 📊 **Dataset prioritization**: cached summaries load instantly for repeated queries  
+* 💅 **Custom UI**: responsive cards, hover effects, and modern styling  
+* ☁️ **Serverless app**: fully hosted on Streamlit Cloud  
+* 🛰️ **Demo online**: [BioOrbit Demo](https://bioorbit.streamlit.app/)
 
 ---
 
-## 📁 Project Structure
-
-BioOrbit-HackHers/
-├── app.py # Main dashboard logic
-├── fetch_abstract.py # NASA abstract retrieval
-├── enrich_for_grok.py # NLP enrichment pipeline
-├── vectorestore.py # Vector search and storage
-├── nasa_space_biology_608.csv # Raw dataset
-├── nasa_space_biology_608_enriched.csv # Enriched dataset
-├── summary_cache.json # Cached summaries
-├── temp_graph.html # Graph visualization
-├── requirements.txt # Dependencies
-├── lib/ # Supporting libraries
-├── utils/ # Utility functions
-└── venv/ # Virtual environment
-
-yaml
-Copy code
-
+## 🗂️ Project structure (suggested)
+```
+BioOrbit/
+├─ app.py                      # Main Streamlit app
+├─ utils/
+│  ├─ ai_summarizer.py         # AI summarization logic
+│  └─ search_engine.py         # Dataset search and retrieval
+├─ data/
+│  └─ nasa_space_biology_608.csv  # NASA dataset
+├─ .github/workflows/
+│  └─ ci-cd.yml                # Build, test, deploy
+├─ requirements.txt
+├─ .env.example
+└─ README.md
+```
 ---
 
-## ⚙️ Getting Started
+## 🧰 Requirements
 
-### 1️⃣ Clone the repo
+* Python 3.10+  
+* Streamlit  
+* pandas, numpy, requests, beautifulsoup4, transformers, dotenv  
+* Optional: ThreadPoolExecutor for faster parallel fetching
+
+Install dependencies:
+
 ```bash
-git clone https://github.com/Ayesha-Zafar-03/BioOrbit-HackHers.git
-cd BioOrbit-HackHers
-2️⃣ Set up environment
-bash
-Copy code
+pip install -r requirements.txt
+````
+
+---
+
+## 🔐 Environment variables
+
+Copy `.env.example` → `.env` and fill in:
+
+```
+GROQ_API_KEY=your_api_key_here
+```
+
+> Keep your API key secret. Don’t commit `.env`.
+
+---
+
+## 📥 Dataset
+
+**NASA Space Biology Dataset (608 studies):**
+
+* Experiments aboard the ISS & other missions
+* Enriched with AI-extracted key findings, biological impacts, and research insights
+* Stored as `data/nasa_space_biology_608.csv`
+
+---
+
+## 🧪 Usage
+
+1. Activate virtual environment:
+
+```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-3️⃣ Install dependencies
-bash
-Copy code
-pip install -r requirements.txt
-4️⃣ Run the app
-bash
-Copy code
-python app.py
-🛰️ Dataset
-We used NASA’s publicly available Space Biology Publication Dataset, containing hundreds of experiments conducted aboard the ISS and other missions.
-The dataset was enriched using AI to extract key findings, research impacts, and biological insights.
+```
 
-🛠️ Tech Stack
-🐍 Python
+2. Run the app:
 
-🌐 Streamlit
+```bash
+streamlit run app.py
+```
 
-📊 Pandas
+3. Use the search bar or example query buttons (Plant Biology, Microgravity, Stem Cells) to explore studies.
+4. Click **Summarize Article** for AI-generated summaries.
 
-🤖 spaCy / Transformers
+---
 
-🧠 Vector Embeddings
+## 👩‍🚀 Future Directions
 
-💅 HTML / CSS
+* 🌐 Integrate real-time NASA APIs
+* 🧠 Expand knowledge graph capabilities
+* 📈 Add more visualization layers
+* 🧪 Enable experiment-level drilldowns
 
-🏆 Hackathon
-Built for the NASA HackHers Challenge under the theme:
+---
 
-“Build a Space Biology Knowledge Engine”
+## ☁️ Live Demo
 
-👩‍🚀 Future Directions
-🌐 Integrate real-time NASA APIs
+Access the app online: [https://bioorbit.streamlit.app/](https://bioorbit.streamlit.app/)
 
-🧠 Expand knowledge graph capabilities
+---
 
-📈 Add more visualization layers
+## 🚀 CI/CD with GitHub Actions
 
-🧪 Enable experiment-level drilldowns
+* Automatically build, test, and deploy app on commit
+* Streamlit Cloud deployment configured
 
-📬 Contact
-Created by @Ayesha-Zafar-03
-💬 For questions or collaboration, feel free to open an issue or reach out via GitHub.
+---
+
+## 📬 Contact
+
+Created by **[@Ayesha-Zafar-03](https://github.com/Ayesha-Zafar-03)**
+
+For questions or collaboration, open an issue or reach out via GitHub.
+
+---
+
+## 📝 License
+
+Choose a license (e.g., MIT) and place it in `LICENSE`.
+
+---
+
+## 🙌 Acknowledgements
+
+* NASA HackHers Challenge
+* Open-source maintainers of Streamlit, pandas, transformers, BeautifulSoup
+
 
