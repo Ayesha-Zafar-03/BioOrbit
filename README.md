@@ -1,8 +1,3 @@
-Here’s a clean, professional **`README.md`** version of your project that you can copy directly into your repo — it keeps all your content but formats it beautifully for GitHub 👇
-
----
-
-```markdown
 # 🚀 BioOrbit: Space Biology Knowledge Engine
 
 **BioOrbit** is an AI-powered dashboard built for **NASA’s HackHers challenge: “Enable a new era of human space exploration!”**  
@@ -44,23 +39,22 @@ This project was developed under NASA’s Earth Science Division during the **Ha
 
 ## 📁 Project Structure
 
-```
-
 BioOrbit-HackHers/
-├── app.py                         # Main dashboard logic
-├── fetch_abstract.py              # NASA abstract retrieval
-├── enrich_for_grok.py             # NLP enrichment pipeline
-├── vectorestore.py                # Vector search and storage
-├── nasa_space_biology_608.csv     # Raw dataset
-├── nasa_space_biology_608_enriched.csv  # Enriched dataset
-├── summary_cache.json             # Cached summaries
-├── temp_graph.html                # Graph visualization
-├── requirements.txt               # Dependencies
-├── lib/                           # Supporting libraries
-├── utils/                         # Utility functions
-└── venv/                          # Virtual environment
+├── app.py # Main dashboard logic
+├── fetch_abstract.py # NASA abstract retrieval
+├── enrich_for_grok.py # NLP enrichment pipeline
+├── vectorestore.py # Vector search and storage
+├── nasa_space_biology_608.csv # Raw dataset
+├── nasa_space_biology_608_enriched.csv # Enriched dataset
+├── summary_cache.json # Cached summaries
+├── temp_graph.html # Graph visualization
+├── requirements.txt # Dependencies
+├── lib/ # Supporting libraries
+├── utils/ # Utility functions
+└── venv/ # Virtual environment
 
-````
+yaml
+Copy code
 
 ---
 
@@ -70,65 +64,51 @@ BioOrbit-HackHers/
 ```bash
 git clone https://github.com/Ayesha-Zafar-03/BioOrbit-HackHers.git
 cd BioOrbit-HackHers
-````
-
-### 2️⃣ Set up environment
-
-```bash
+2️⃣ Set up environment
+bash
+Copy code
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3️⃣ Install dependencies
-
-```bash
+3️⃣ Install dependencies
+bash
+Copy code
 pip install -r requirements.txt
-```
-
-### 4️⃣ Run the app
-
-```bash
+4️⃣ Run the app
+bash
+Copy code
 python app.py
-```
+🛰️ Dataset
+We used NASA’s publicly available Space Biology Publication Dataset, containing hundreds of experiments conducted aboard the ISS and other missions.
+The dataset was enriched using AI to extract key findings, research impacts, and biological insights.
 
----
+🛠️ Tech Stack
+🐍 Python
 
-## 🛰️ Dataset
+🌐 Streamlit
 
-We used **NASA’s publicly available Space Biology Publication Dataset**, containing hundreds of experiments conducted aboard the ISS and other missions.
-The dataset was enriched using AI to extract **key findings, research impacts, and biological insights.**
+📊 Pandas
 
----
+🤖 spaCy / Transformers
 
-## 🛠️ Tech Stack
+🧠 Vector Embeddings
 
-* 🐍 Python
-* 🌐 Streamlit
-* 📊 Pandas
-* 🤖 spaCy / Transformers
-* 🧠 Vector Embeddings
-* 💅 HTML / CSS
+💅 HTML / CSS
 
----
+🏆 Hackathon
+Built for the NASA HackHers Challenge under the theme:
 
-## 🏆 Hackathon
+“Build a Space Biology Knowledge Engine”
 
-Built for the **NASA HackHers Challenge** under the theme:
+👩‍🚀 Future Directions
+🌐 Integrate real-time NASA APIs
 
-> “Build a Space Biology Knowledge Engine”
+🧠 Expand knowledge graph capabilities
 
----
+📈 Add more visualization layers
 
-## 👩‍🚀 Future Directions
+🧪 Enable experiment-level drilldowns
 
-* 🌐 Integrate real-time NASA APIs
-* 🧠 Expand knowledge graph capabilities
-* 📈 Add more visualization layers
-* 🧪 Enable experiment-level drilldowns
-
----
-
-## 📬 Contact
-
-Created by **[@Ayesha-Zafar-03](https://github.com/Ayesha-Zafar-03)**
+📬 Contact
+Created by @Ayesha-Zafar-03
 💬 For questions or collaboration, feel free to open an issue or reach out via GitHub.
+
