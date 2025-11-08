@@ -1,0 +1,144 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>Knowledge Graph: plants</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 20px;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+                background-color: #F8F9FA;
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 20px;
+                padding: 15px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .header h2 {
+                margin: 0;
+                color: #333;
+                font-size: 22px;
+            }
+            .legend {
+                display: flex;
+                justify-content: center;
+                gap: 30px;
+                margin-top: 10px;
+                font-size: 14px;
+                color: #666;
+            }
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .legend-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+            #mynetwork {
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                background: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h2>📊 Knowledge Graph: Plants</h2>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background-color: #FF6B6B;"></div>
+                    <span>Research Papers</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background-color: #4ECDC4;"></div>
+                    <span>Authors</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_69", "label": "Unfolded protein response in plants: one master, many questi\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eUnfolded protein response in plants: one master, many questions.\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_70", "label": "Vesicles versus Tubes: Is Endoplasmic Reticulum-Golgi Transp\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eVesicles versus Tubes: Is Endoplasmic Reticulum-Golgi Transport in Plants Fundamentally Different from Other Eukaryotes?\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_73", "label": "Maintaining the factory: The roles of the unfolded protein r\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eMaintaining the factory: The roles of the unfolded protein response in cellular homeostasis in plants.\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_74", "label": "NADPH oxidase activity is required for ER stress survival in\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eNADPH oxidase activity is required for ER stress survival in plants.\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_146", "label": "Genetic dissection of the Arabidopsis spaceflight transcript\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eGenetic dissection of the Arabidopsis spaceflight transcriptome: Are some responses dispensable for the physiological adaptation of plants to spaceflight?\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_170", "label": "Gravitropism and mechanical signaling in plants.\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eGravitropism and mechanical signaling in plants.\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_171", "label": "Salt stress-induced Ca2+ waves are associated with rapid, lo\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eSalt stress-induced Ca2+ waves are associated with rapid, long-distance root-to-shoot signaling in plants.\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_172", "label": "Gravitropic signaling in plants\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eGravitropic signaling in plants\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_175", "label": "ROS, calcium and electric signals: Key mediators of rapid sy\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eROS, calcium and electric signals: Key mediators of rapid systemic signaling in plants\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_177", "label": "Orchestrating rapid long-distance signaling in plants with C\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eOrchestrating rapid long-distance signaling in plants with Ca2+ , ROS, and electrical signals\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_181", "label": "The fast and the furious: Rapid long-range signaling in plan\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eThe fast and the furious: Rapid long-range signaling in plants.\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_224", "label": "United in Diversity: Mechanosensitive Ion Channels in Plants\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eUnited in Diversity: Mechanosensitive Ion Channels in Plants\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_313", "label": "Growth chambers on the International Space Station for large\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eGrowth chambers on the International Space Station for large plants\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_389", "label": "Plants grown in Apollo lunar regolith present stress-associa\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003ePlants grown in Apollo lunar regolith present stress-associated transcriptomes that inform prospects for lunar exploration\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_417", "label": "Phosphoinositides control the localization of HOPS subunit V\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003ePhosphoinositides control the localization of HOPS subunit VPS41, which together with VPS33 mediates vacuole fusion in plants.\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}, {"color": "#FF6B6B", "font": {"color": "#333"}, "id": "paper_521", "label": "Draft genome sequences of two Fusarium oxysporum isolates cu\n(N/A)", "shape": "dot", "size": 15.0, "title": "\u003cb\u003eDraft genome sequences of two Fusarium oxysporum isolates cultured from infected Zinnia hybrida plants grown on the International Space Station.\u003c/b\u003e\u003cbr\u003eYear: N/A\u003cbr\u003eCitations: 0\u003cbr\u003eAuthors: Unknown"}]);
+                  edges = new vis.DataSet([]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"enabled": true, "barnesHut": {"gravitationalConstant": -8000, "centralGravity": 0.3, "springLength": 150, "springConstant": 0.04, "damping": 0.09, "avoidOverlap": 0.1}, "minVelocity": 0.75, "stabilization": {"enabled": true, "iterations": 200}}, "interaction": {"hover": true, "navigationButtons": true, "keyboard": true}, "nodes": {"font": {"size": 12}}, "edges": {"smooth": {"type": "continuous"}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+    </body>
+    </html>
+    
