@@ -3,10 +3,8 @@ import pandas as pd
 from utils.search_engine import load_dataset, search_publications
 from utils.ai_summarizer import summarize_text
 from dotenv import load_dotenv
-import os, requests, json
+import os, requests, hashlib, time
 from bs4 import BeautifulSoup
-import hashlib
-import time
 
 # Load environment variables
 load_dotenv()
@@ -25,14 +23,14 @@ if 'fetched_content' not in st.session_state:
 if 'summaries' not in st.session_state:
     st.session_state.summaries = {}
 
-# Hide the sidebar
+# Hide sidebar
 st.markdown("""
 <style>
 [data-testid="stSidebar"] {display: none;}
 </style>
 """, unsafe_allow_html=True)
 
-# Custom CSS for compact layout and centered buttons
+# Custom CSS
 st.markdown("""
 <style>
 body, [data-testid="stAppViewContainer"] {background-color:#000;color:#fff;}
@@ -116,19 +114,6 @@ query = st.text_input("Search NASA Space Biology Studies", placeholder="e.g., mi
 if query != st.session_state.query:
     st.session_state.query = query
     st.session_state.summarizing = {}
-
-# Example queries (centered)
-st.markdown("<h4 style='text-align:center;margin-bottom:4px;'>Quick Example Searches</h4>", unsafe_allow_html=True)
-cols = st.columns([1,1,1])
-examples=[("🌱 Plant Biology","plant"),("🧫 Microgravity","microgravity"),("🧬 Stem Cells","stem cells")]
-rerun_needed=False
-for idx, (col, (label,q_val)) in enumerate(zip(cols, examples)):
-    with col:
-        if st.button(label, key=f"example_{idx}"):
-            st.session_state.query=q_val
-            st.session_state.summarizing={}
-            rerun_needed=True
-if rerun_needed: st.experimental_rerun()
 
 # Perform search
 if st.session_state.query:
