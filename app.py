@@ -71,8 +71,12 @@ def fetch_article_text(url):
 
     try:
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-        }
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8",
+    "Referer": "https://www.google.com/",
+    "DNT": "1",
+}
         response = requests.get(url, headers=headers, timeout=12, allow_redirects=True)
 
         if response.status_code != 200:
