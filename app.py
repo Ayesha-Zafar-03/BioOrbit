@@ -61,9 +61,10 @@ df = load_data()
 # Optimized article fetching
 @st.cache_data(show_spinner=False, ttl=3600)
 @st.cache_data(show_spinner=False, ttl=3600)
+@st.cache_data(show_spinner=False, ttl=3600)
 def fetch_article_text(url):
-    """Robust scraper that extracts HTML text, meta descriptions,
-       and PDF content if available."""
+    """Advanced scraper with fallbacks: HTML, OpenGraph, Schema.org,
+       meta description, abstract divs, and PDF via DOI resolution."""
 
     if not url:
         return "", "no_url"
@@ -77,79 +78,114 @@ def fetch_article_text(url):
         if response.status_code != 200:
             return "", f"http_error_{response.status_code}"
 
-        # --------------------------
-        # 1️⃣ Detect PDF link directly
-        # --------------------------
-        if response.headers.get("Content-Type", "").lower().startswith("application/pdf"):
-            try:
-                import pdfplumber
-                with open("/tmp/temp.pdf", "wb") as f:
-                    f.write(response.content)
-                with pdfplumber.open("/tmp/temp.pdf") as pdf:
-                    text = "\n".join([page.extract_text() or "" for page in pdf.pages])
-                text = " ".join(text.split())
-                return text[:8000], "pdf_extracted"
-            except:
-                return "", "pdf_extract_failed"
-
-        # --------------------------
-        # 2️⃣ Parse HTML
-        # --------------------------
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Remove noise
+        # Remove junk
         for tag in ["script", "style", "nav", "footer", "header", "iframe", "aside"]:
             for t in soup.find_all(tag):
                 t.decompose()
 
         # --------------------------
-        # 3️⃣ Try meta description
+        # 1️⃣ Extract OpenGraph description
+        # --------------------------
+        og = soup.find("meta", property="og:description")
+        if og and og.get("content"):
+            text = og["content"].strip()
+            if len(text) > 40:
+                return text, "og_description"
+
+        # --------------------------
+        # 2️⃣ Extract Schema.org description
+        # --------------------------
+        schema_desc = soup.find("meta", {"itemprop": "description"})
+        if schema_desc and schema_desc.get("content"):
+            text = schema_desc["content"].strip()
+            if len(text) > 40:
+                return text, "schema_description"
+
+        # --------------------------
+        # 3️⃣ Meta description fallback
         # --------------------------
         meta = soup.find("meta", attrs={"name": "description"})
         if meta and meta.get("content"):
-            desc = meta["content"].strip()
-            if len(desc) > 50:
-                return desc, "meta_description"
+            text = meta["content"].strip()
+            if len(text) > 40:
+                return text, "meta_description"
 
         # --------------------------
-        # 4️⃣ Extract all <p> tags (improved)
+        # 4️⃣ Extract Abstract (common for journals)
+        # --------------------------
+        abstract_labels = ["abstract", "article__abstract", "section--abstract"]
+
+        for cls in abstract_labels:
+            abstract_div = soup.find("div", class_=cls)
+            if abstract_div:
+                text = abstract_div.get_text(" ", strip=True)
+                if len(text) > 40:
+                    return text, "abstract_div"
+
+        # Generic "abstract" tag name
+        abs_tag = soup.find("abstract")
+        if abs_tag:
+            t = abs_tag.get_text(" ", strip=True)
+            if len(t) > 40:
+                return t, "abstract_tag"
+
+        # --------------------------
+        # 5️⃣ Extract paragraphs normally
         # --------------------------
         paragraphs = soup.find_all("p")
         extracted = [
             p.get_text(" ", strip=True)
             for p in paragraphs
-            if len(p.get_text(strip=True)) > 30
+            if len(p.get_text(strip=True)) > 20
         ]
 
-        text = " ".join(extracted)
-        text = " ".join(text.split())  # cleanup multiple spaces
-
-        if len(text) > 500:
-            return text[:8000], "html_extracted"
+        if extracted:
+            text = " ".join(extracted)
+            if len(text) > 200:
+                return text[:8000], "html_paragraphs"
 
         # --------------------------
-        # 5️⃣ Last fallback: try div content
+        # 6️⃣ DOI → Fetch PDF or abstract automatically
         # --------------------------
-        div_texts = soup.find_all("div")
-        big_blocks = [
+        doi_meta = soup.find("meta", attrs={"name": "citation_doi"})
+        if doi_meta:
+            doi = doi_meta.get("content", "").strip()
+            if doi:
+                pdf_link = f"https://doi.org/{doi}"
+                try:
+                    doi_res = requests.get(pdf_link, headers=headers, timeout=10)
+                    if doi_res.status_code == 200:
+                        # try to detect text inside the redirect page
+                        doi_soup = BeautifulSoup(doi_res.text, "html.parser")
+                        abstract = doi_soup.find("section", {"id": "Abs1-content"})
+                        if abstract:
+                            t = abstract.get_text(" ", strip=True)
+                            if len(t) > 40:
+                                return t, "doi_resolved_abstract"
+                except:
+                    pass
+
+        # --------------------------
+        # 7️⃣ Last fallback – extract large text blocks
+        # --------------------------
+        blocks = soup.find_all("div")
+        text_chunks = [
             d.get_text(" ", strip=True)
-            for d in div_texts
-            if len(d.get_text(strip=True)) > 80
+            for d in blocks
+            if len(d.get_text(strip=True)) > 50
         ]
 
-        text2 = " ".join(big_blocks)
-        text2 = " ".join(text2.split())
-
-        if len(text2) > 300:
-            return text2[:8000], "div_extracted"
+        if text_chunks:
+            combined = " ".join(text_chunks)
+            if len(combined) > 200:
+                return combined[:8000], "large_blocks"
 
         # --------------------------
-        # 6️⃣ If still empty → mark as insufficient
+        # 8️⃣ If still empty
         # --------------------------
         return "", "insufficient"
-
-    except requests.exceptions.Timeout:
-        return "", "timeout"
 
     except Exception as e:
         print("SCRAPER ERROR:", e)
