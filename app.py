@@ -60,37 +60,101 @@ df = load_data()
 
 # Optimized article fetching
 @st.cache_data(show_spinner=False, ttl=3600)
+@st.cache_data(show_spinner=False, ttl=3600)
 def fetch_article_text(url):
-    if not url: return "", "no_url"
+    """Robust scraper that extracts HTML text, meta descriptions,
+       and PDF content if available."""
+
+    if not url:
+        return "", "no_url"
+
     try:
-        headers = {'User-Agent':'Mozilla/5.0'}
-        response = requests.get(url, headers=headers, timeout=8, allow_redirects=True)
-        if response.status_code != 200: return "", f"http_error_{response.status_code}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+        response = requests.get(url, headers=headers, timeout=12, allow_redirects=True)
+
+        if response.status_code != 200:
+            return "", f"http_error_{response.status_code}"
+
+        # --------------------------
+        # 1️⃣ Detect PDF link directly
+        # --------------------------
+        if response.headers.get("Content-Type", "").lower().startswith("application/pdf"):
+            try:
+                import pdfplumber
+                with open("/tmp/temp.pdf", "wb") as f:
+                    f.write(response.content)
+                with pdfplumber.open("/tmp/temp.pdf") as pdf:
+                    text = "\n".join([page.extract_text() or "" for page in pdf.pages])
+                text = " ".join(text.split())
+                return text[:8000], "pdf_extracted"
+            except:
+                return "", "pdf_extract_failed"
+
+        # --------------------------
+        # 2️⃣ Parse HTML
+        # --------------------------
         soup = BeautifulSoup(response.text, "html.parser")
-        for element in soup.find_all(['script','style','nav','footer','header','aside','iframe']):
-            element.decompose()
-        text_content=[]
-        article_selectors=['article','main','div[class*="content"]','div[class*="article"]']
-        for sel in article_selectors:
-            containers = soup.select(sel, limit=3)
-            for container in containers:
-                paragraphs = container.find_all('p', limit=20)
-                if len(paragraphs) > 3:
-                    text_content.extend([p.get_text(strip=True) for p in paragraphs if len(p.get_text(strip=True))>30])
-                    if len(' '.join(text_content)) > 500: break
-            if len(' '.join(text_content))>500: break
-        if not text_content or len(' '.join(text_content))<300:
-            paragraphs = soup.find_all('p', limit=30)
-            text_content = [p.get_text(strip=True) for p in paragraphs if len(p.get_text(strip=True))>30]
-        full_text = ' '.join(text_content)
-        full_text = ' '.join(full_text.split())
-        if len(full_text)>8000: full_text=full_text[:8000]; status="success_truncated"
-        elif len(full_text)>300: status="success"
-        elif len(full_text)>100: status="partial"
-        else: status="insufficient"
-        return full_text, status
-    except requests.exceptions.Timeout: return "", "timeout"
-    except: return "", "error"
+
+        # Remove noise
+        for tag in ["script", "style", "nav", "footer", "header", "iframe", "aside"]:
+            for t in soup.find_all(tag):
+                t.decompose()
+
+        # --------------------------
+        # 3️⃣ Try meta description
+        # --------------------------
+        meta = soup.find("meta", attrs={"name": "description"})
+        if meta and meta.get("content"):
+            desc = meta["content"].strip()
+            if len(desc) > 50:
+                return desc, "meta_description"
+
+        # --------------------------
+        # 4️⃣ Extract all <p> tags (improved)
+        # --------------------------
+        paragraphs = soup.find_all("p")
+        extracted = [
+            p.get_text(" ", strip=True)
+            for p in paragraphs
+            if len(p.get_text(strip=True)) > 30
+        ]
+
+        text = " ".join(extracted)
+        text = " ".join(text.split())  # cleanup multiple spaces
+
+        if len(text) > 500:
+            return text[:8000], "html_extracted"
+
+        # --------------------------
+        # 5️⃣ Last fallback: try div content
+        # --------------------------
+        div_texts = soup.find_all("div")
+        big_blocks = [
+            d.get_text(" ", strip=True)
+            for d in div_texts
+            if len(d.get_text(strip=True)) > 80
+        ]
+
+        text2 = " ".join(big_blocks)
+        text2 = " ".join(text2.split())
+
+        if len(text2) > 300:
+            return text2[:8000], "div_extracted"
+
+        # --------------------------
+        # 6️⃣ If still empty → mark as insufficient
+        # --------------------------
+        return "", "insufficient"
+
+    except requests.exceptions.Timeout:
+        return "", "timeout"
+
+    except Exception as e:
+        print("SCRAPER ERROR:", e)
+        return "", "error"
+
 
 def get_content_for_summary(content, content_source, link, article_id):
     if content and len(content.strip())>500 and content_source!="title_only": return content, "dataset", len(content)
