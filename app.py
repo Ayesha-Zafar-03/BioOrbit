@@ -62,139 +62,114 @@ df = load_data()
 @st.cache_data(show_spinner=False, ttl=3600)
 @st.cache_data(show_spinner=False, ttl=3600)
 @st.cache_data(show_spinner=False, ttl=3600)
+@st.cache_data(show_spinner=False, ttl=3600)
 def fetch_article_text(url):
-    """Advanced scraper with fallbacks: HTML, OpenGraph, Schema.org,
-       meta description, abstract divs, and PDF via DOI resolution."""
+    """
+    Robust article extractor:
+    - Strong headers to bypass anti-bot
+    - NASA ADS API abstract fallback (works even when scraping fails)
+    - Multiple HTML extraction layers
+    - Status logging for debugging
+    """
 
     if not url:
         return "", "no_url"
 
     try:
+        # Strong anti-blocking headers
         headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8",
-    "Referer": "https://www.google.com/",
-    "DNT": "1",
-}
-        response = requests.get(url, headers=headers, timeout=12, allow_redirects=True)
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) "
+                "Gecko/20100101 Firefox/117.0"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Referer": "https://www.google.com/",
+            "DNT": "1",
+            "Connection": "keep-alive",
+        }
 
-        if response.status_code != 200:
-            return "", f"http_error_{response.status_code}"
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=15,
+            allow_redirects=True,
+        )
+
+        # Debug: Show what deployment receives
+        st.write("🔍 Response Code:", response.status_code)
+        st.write("🔍 First 300 chars:", response.text[:300])
+
+        # If blocked early, fall back to ADS
+        if response.status_code in [403, 429] or len(response.text) < 50:
+            abstract_ads = fetch_ads_abstract(url)
+            if abstract_ads:
+                return abstract_ads, "ads_api_fallback"
+            return "", f"blocked_{response.status_code}"
 
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Remove junk
+        # Remove non-content tags
         for tag in ["script", "style", "nav", "footer", "header", "iframe", "aside"]:
             for t in soup.find_all(tag):
                 t.decompose()
 
-        # --------------------------
-        # 1️⃣ Extract OpenGraph description
-        # --------------------------
+        # EXTRACTION LAYERS
+        # 1. OpenGraph
         og = soup.find("meta", property="og:description")
         if og and og.get("content"):
             text = og["content"].strip()
             if len(text) > 40:
                 return text, "og_description"
 
-        # --------------------------
-        # 2️⃣ Extract Schema.org description
-        # --------------------------
+        # 2. Schema.org
         schema_desc = soup.find("meta", {"itemprop": "description"})
         if schema_desc and schema_desc.get("content"):
             text = schema_desc["content"].strip()
             if len(text) > 40:
                 return text, "schema_description"
 
-        # --------------------------
-        # 3️⃣ Meta description fallback
-        # --------------------------
-        meta = soup.find("meta", attrs={"name": "description"})
-        if meta and meta.get("content"):
-            text = meta["content"].strip()
+        # 3. Meta description
+        meta_desc = soup.find("meta", attrs={"name": "description"})
+        if meta_desc and meta_desc.get("content"):
+            text = meta_desc["content"].strip()
             if len(text) > 40:
                 return text, "meta_description"
 
-        # --------------------------
-        # 4️⃣ Extract Abstract (common for journals)
-        # --------------------------
-        abstract_labels = ["abstract", "article__abstract", "section--abstract"]
-
-        for cls in abstract_labels:
-            abstract_div = soup.find("div", class_=cls)
-            if abstract_div:
-                text = abstract_div.get_text(" ", strip=True)
+        # 4. Abstract divs
+        abstract_keywords = ["abstract", "article__abstract", "section--abstract"]
+        for cls in abstract_keywords:
+            div = soup.find("div", class_=cls)
+            if div:
+                text = div.get_text(" ", strip=True)
                 if len(text) > 40:
                     return text, "abstract_div"
 
-        # Generic "abstract" tag name
+        # 5. Generic <abstract> tag
         abs_tag = soup.find("abstract")
         if abs_tag:
-            t = abs_tag.get_text(" ", strip=True)
-            if len(t) > 40:
-                return t, "abstract_tag"
+            text = abs_tag.get_text(" ", strip=True)
+            if len(text) > 40:
+                return text, "abstract_tag"
 
-        # --------------------------
-        # 5️⃣ Extract paragraphs normally
-        # --------------------------
+        # 6. Paragraph extraction
         paragraphs = soup.find_all("p")
-        extracted = [
-            p.get_text(" ", strip=True)
-            for p in paragraphs
-            if len(p.get_text(strip=True)) > 20
-        ]
+        extracted = [p.get_text(" ", strip=True) for p in paragraphs if len(p.get_text(strip=True)) > 25]
 
         if extracted:
-            text = " ".join(extracted)
-            if len(text) > 200:
-                return text[:8000], "html_paragraphs"
+            big_text = " ".join(extracted)
+            if len(big_text) > 200:
+                return big_text[:8000], "html_paragraphs"
 
-        # --------------------------
-        # 6️⃣ DOI → Fetch PDF or abstract automatically
-        # --------------------------
-        doi_meta = soup.find("meta", attrs={"name": "citation_doi"})
-        if doi_meta:
-            doi = doi_meta.get("content", "").strip()
-            if doi:
-                pdf_link = f"https://doi.org/{doi}"
-                try:
-                    doi_res = requests.get(pdf_link, headers=headers, timeout=10)
-                    if doi_res.status_code == 200:
-                        # try to detect text inside the redirect page
-                        doi_soup = BeautifulSoup(doi_res.text, "html.parser")
-                        abstract = doi_soup.find("section", {"id": "Abs1-content"})
-                        if abstract:
-                            t = abstract.get_text(" ", strip=True)
-                            if len(t) > 40:
-                                return t, "doi_resolved_abstract"
-                except:
-                    pass
+        # 7. LAST FALLBACK — NASA ADS abstract
+        abstract_ads = fetch_ads_abstract(url)
+        if abstract_ads:
+            return abstract_ads, "ads_api_fallback"
 
-        # --------------------------
-        # 7️⃣ Last fallback – extract large text blocks
-        # --------------------------
-        blocks = soup.find_all("div")
-        text_chunks = [
-            d.get_text(" ", strip=True)
-            for d in blocks
-            if len(d.get_text(strip=True)) > 50
-        ]
-
-        if text_chunks:
-            combined = " ".join(text_chunks)
-            if len(combined) > 200:
-                return combined[:8000], "large_blocks"
-
-        # --------------------------
-        # 8️⃣ If still empty
-        # --------------------------
-        return "", "insufficient"
+        return "", "insufficient_html"
 
     except Exception as e:
-        print("SCRAPER ERROR:", e)
-        return "", "error"
-
+        return "", f"error_{str(e)}"
 
 def get_content_for_summary(content, content_source, link, article_id):
     if content and len(content.strip())>500 and content_source!="title_only": return content, "dataset", len(content)
