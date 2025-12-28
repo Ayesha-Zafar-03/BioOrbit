@@ -8,6 +8,8 @@ import hashlib
 # -------------------------------------------------
 ADS_API_KEY = st.secrets.get("NASA_ADS_API_KEY", "")
 GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", "")
+st.write("Groq key loaded:", bool(GROQ_API_KEY))
+
 
 # -------------------------------------------------
 # PAGE CONFIG
