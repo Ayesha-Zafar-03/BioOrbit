@@ -1,27 +1,24 @@
 import requests
 
-def summarize_text(text, api_key):
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
+def generate_summary(text):
+    if not GROQ_API_KEY:
+        return "❌ GROQ API key missing."
 
-    payload = {
-        "model": "llama3-8b-8192",
-        "messages": [
-            {
-                "role": "system",
-                "content": "Summarize the following NASA space biology research abstract in clear academic language."
-            },
-            {
-                "role": "user",
-                "content": text
-            }
-        ],
-        "temperature": 0.3
-    }
+    try:
+        client = Groq(api_key=GROQ_API_KEY)
 
-    response = requests.post(url, headers=headers, json=payload, timeout=30)
-    response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+        response = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=[
+                {"role": "system", "content": "Summarize scientific text clearly."},
+                {"role": "user", "content": text}
+            ],
+            temperature=0.4,
+            max_tokens=200
+        )
+
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        return f"❌ AI Error: {str(e)}"
+
