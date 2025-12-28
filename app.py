@@ -155,13 +155,13 @@ def fetch_ads_results(query, rows=10):
 # GROQ SUMMARIZER
 # -------------------------------------------------
 def summarize_text(text):
-    url = "https://api.groq.com/openai/v1/chat/completions"
+    url = "https://api.groq.com/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "llama3-8b-8192",
+        "model": "gpt-3.5-mini",
         "messages": [
             {"role":"system","content":"Summarize this NASA space biology research in clear academic language."},
             {"role":"user","content":text}
