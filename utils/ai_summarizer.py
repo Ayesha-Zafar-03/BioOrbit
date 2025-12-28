@@ -1,16 +1,11 @@
 import requests
 def summarize_text(text):
     """
-    Generate an AI summary of the given NASA abstract using Groq API.
-
-    - Requires GROQ_API_KEY in Streamlit Secrets.
-    - Truncates text if too long for API.
-    - Returns either the summary or a clear error message.
+    Generate AI summary using Groq API and show full error if it fails.
     """
     if not GROQ_API_KEY:
-        return "❌ GROQ API key missing. Please add it in Streamlit Secrets."
+        return "❌ GROQ API key missing."
 
-    # Limit text to 6000 chars to avoid API errors
     truncated_text = text[:6000]
 
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -31,13 +26,11 @@ def summarize_text(text):
     try:
         r = requests.post(url, headers=headers, json=payload, timeout=30)
 
-        # If API fails, show **full error** for debugging
+        # 🔥 SHOW FULL ERROR
         if r.status_code != 200:
             return f"❌ Groq API Error {r.status_code}: {r.text}"
 
         response_json = r.json()
-
-        # Check if choices exist
         choices = response_json.get("choices", [])
         if not choices:
             return "❌ Groq API Error: No choices returned."
@@ -48,3 +41,4 @@ def summarize_text(text):
         return f"❌ Groq Request Exception: {str(e)}"
     except Exception as e:
         return f"❌ Groq Unknown Error: {str(e)}"
+
