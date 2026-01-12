@@ -1,14 +1,17 @@
 # BioOrbit — AI-Powered NASA Research Explorer 🧬🌌
 
-**BioOrbit** is a web app that allows users to **search, explore, and summarize NASA Space Biology research articles**. Built for the **NASA Hackathon**, it demonstrates how AI can make complex scientific research **accessible and actionable**.  
+**BioOrbit** is a web app that allows users to **search, explore, and summarize NASA Space Biology research articles**.  
+Built for the **NASA Hackathon**, this project demonstrates how **AI can make complex scientific research accessible and actionable**.
 
-This project showcases skills in **Python, AI/ML, API integration, data handling, and web app development**.
+> *Note: Project was developed iteratively directly on GitHub during the hackathon, showcasing rapid prototyping and feature implementation skills.*
+
+This project highlights **Python, AI/ML, API integration, data handling, and web app development**.
 
 ---
 
 ## 🏆 Achievements
 
-- Built for the **NASA Hackathon** and recognized for innovative use of AI in space biology research.  
+- Built for the **NASA Hackathon** — recognized for innovative AI use in space biology research.  
 - Certificate: [View on LinkedIn](https://www.linkedin.com/in/ayesha-zafar03/details/certifications/1766219867831/single-media-viewer/?profileId=ACoAAEZ2YVsBLGhwcNHEkxQm5iYEemAyoYlrWoE)  
 
 ---
@@ -19,13 +22,13 @@ This project showcases skills in **Python, AI/ML, API integration, data handling
   Find research on microgravity, radiation, stem cells, plant biology, and more via **NASA ADS API**.  
 
 - 🤖 **AI-Powered Summaries**  
-  Uses **HuggingFace BART model** to summarize abstracts into **4 concise bullet points** for easy reading.  
+  Summarizes scientific abstracts using **HuggingFace BART model**, generating **4 concise bullet points** for easy reading.  
 
 - 📊 **Interactive Dashboard**  
   Streamlit-based **dark-mode UI** with article cards, summary buttons, and direct links.  
 
 - ☁️ **Live Demo**  
-  Hosted on Streamlit Cloud for easy sharing: [BioOrbit App](https://bioorbit.streamlit.app/)  
+  Hosted on Streamlit Cloud: [BioOrbit App](https://bioorbit.streamlit.app/)  
 
 ---
 
@@ -41,11 +44,12 @@ This project showcases skills in **Python, AI/ML, API integration, data handling
 
 ## 🎯 Skills Demonstrated
 
-- AI & NLP integration for summarization  
+- AI & NLP integration for scientific summarization  
 - API integration and data handling  
 - Full-stack Python dashboard development  
 - UX/UI design for interactive apps  
 - Efficient caching and session state management  
+- Rapid prototyping under hackathon constraints  
 
 ---
 
@@ -92,6 +96,9 @@ streamlit run app.py
 
 Created by **Ayesha Zafar** — [GitHub Profile](https://github.com/Ayesha-Zafar-03)
 
-✨ *BioOrbit transforms complex space biology research into actionable insights, showcasing AI innovation at NASA Hackathon.*
+✨ *BioOrbit transforms complex space biology research into actionable insights, demonstrating AI innovation at NASA Hackathon.*
 
 ---
+
+
+
