@@ -1,8 +1,3 @@
-Perfect! Now that I see the **actual app code and summarizer**, I can make a **recruiter-friendly `README.md`** that clearly highlights your **skills, AI integration, and impact**, while keeping it concise for recruiters who skim GitHub. Here's a polished version:
-
----
-
-````markdown
 # BioOrbit — AI-Powered NASA Research Explorer 🧬🌌
 
 **BioOrbit** is a web app that allows users to **search, explore, and summarize NASA Space Biology research articles**. By combining **AI summarization** and a **clean Streamlit interface**, it converts complex scientific papers into **short, digestible insights**, making research accessible and actionable.
