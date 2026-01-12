@@ -46,7 +46,6 @@ BioOrbit/
 ├─ app.py                  # Main Streamlit app
 ├─ utils/
 │   └─ ai_summarizer.py    # AI summarization logic
-├─ data/                   # (Optional) cached data
 ├─ summary_cache.json       # Local cache for generated summaries
 ├─ requirements.txt         # Python dependencies
 └─ README.md
