@@ -116,29 +116,36 @@ if not ADS_API_KEY:
 def fetch_ads(query, rows, start):
     url = "https://api.adsabs.harvard.edu/v1/search/query"
     headers = {"Authorization": f"Bearer {ADS_API_KEY}"}
+
+    # Prepare query to search only in title and abstract
+    # Multi-word queries are handled by wrapping in quotes
+    clean_query = ' '.join(query.split())  # remove extra spaces
+    query_str = f'title:"{clean_query}" OR abstract:"{clean_query}"'
+
     params = {
-        "q": query,
+        "q": query_str,
         "fl": "title,abstract,author,year,doi",
         "rows": rows,
         "start": start
     }
 
-    r = requests.get(url, headers=headers, params=params, timeout=20)
-    if r.status_code != 200:
-        return pd.DataFrame(), 0, r.text
+    try:
+        r = requests.get(url, headers=headers, params=params, timeout=20)
+        r.raise_for_status()
+    except requests.RequestException as e:
+        return pd.DataFrame(), 0, str(e)
 
-    data = r.json()["response"]
-    total = data["numFound"]
+    data = r.json().get("response", {})
+    total = data.get("numFound", 0)
 
     rows_data = []
-    for d in data["docs"]:
+    for d in data.get("docs", []):
         rows_data.append({
             "title": d.get("title", [""])[0],
             "abstract": d.get("abstract", ""),
             "year": d.get("year", ""),
             "authors": ", ".join(d.get("author", [])[:3]),
-            "link": f"https://ui.adsabs.harvard.edu/abs/{d.get('doi',[None])[0]}"
-            if d.get("doi") else ""
+            "link": f"https://ui.adsabs.harvard.edu/abs/{d.get('doi',[None])[0]}" if d.get("doi") else ""
         })
 
     return pd.DataFrame(rows_data), total, ""
