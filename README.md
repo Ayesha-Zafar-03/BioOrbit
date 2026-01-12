@@ -94,6 +94,4 @@ Created by **Ayesha Zafar** — [GitHub Profile](https://github.com/Ayesha-Zafar
 
 ✨ *BioOrbit transforms complex space biology research into actionable insights, showcasing AI innovation at NASA Hackathon.*
 
-```
-
 ---
