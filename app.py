@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import requests
 import hashlib
+import json
+import os
 
 # =================================================
 # IMPORT SUMMARIZER
@@ -28,10 +30,19 @@ st.set_page_config(
 st.write("NASA ADS key loaded:", bool(ADS_API_KEY))
 
 # =================================================
-# SESSION STATE
+# SESSION STATE & CACHE FILE
 # =================================================
+CACHE_FILE = "summary_cache.json"
+
+# Load cache file if exists
+if os.path.exists(CACHE_FILE):
+    with open(CACHE_FILE, "r") as f:
+        cached_summaries = json.load(f)
+else:
+    cached_summaries = {}
+
 if "summaries" not in st.session_state:
-    st.session_state.summaries = {}
+    st.session_state.summaries = cached_summaries
 
 # =================================================
 # BLACK UI
@@ -84,8 +95,12 @@ input, textarea {
 # =================================================
 # TITLE
 # =================================================
-st.title("🧬 BioOrbit")
-st.caption("Explore NASA Space Biology Research")
+st.markdown("""
+<div style='text-align: center;'>
+    <h1>🧬 BioOrbit</h1>
+    <p style='color: #aaa;'>Explore NASA Space Biology Research</p>
+</div>
+""", unsafe_allow_html=True)
 
 # =================================================
 # STOP IF KEYS MISSING
@@ -158,7 +173,7 @@ if query:
         st.markdown(f"""
         <div class="result-card">
             <h4>{row.title}</h4>
-            <p style="color:#aaa;"><b>Authors:</b> {row.authors} • <b>Year:</b> {row.year}</p>
+            <p style="color:#aaa;"><b>Authors:</b> {row.authors}  <b>Year:</b> {row.year}</p>
             {"<a class='link-button' target='_blank' href='"+row.link+"'>🔗 View</a>" if row.link else ""}
         </div>
         """, unsafe_allow_html=True)
@@ -168,21 +183,23 @@ if query:
             if article_id not in st.session_state.summaries:
                 with st.spinner("🤖 Generating summary..."):
                     summary_text = summarize_text(row.abstract)
-
                     # Convert to 4-bullet summary
-                    bullets = summary_text.split(". ")  # simple split by sentence
-                    bullets = [f"• {b.strip()}" for b in bullets if b][:4]  # take first 4 sentences
+                    bullets = summary_text.split(". ")
+                    bullets = [f"• {b.strip()}" for b in bullets if b][:4]
                     st.session_state.summaries[article_id] = "<br>".join(bullets)
+
+                    # Save to cache file
+                    with open(CACHE_FILE, "w") as f:
+                        json.dump(st.session_state.summaries, f)
 
             st.markdown(f"""
             <div class="summary-box">
-                <h5>📝 AI Summary</h5>
+                <h5> AI Summary</h5>
                 <p>{st.session_state.summaries[article_id]}</p>
             </div>
             """, unsafe_allow_html=True)
 
-        # Spacing between papers
         st.markdown("<br>", unsafe_allow_html=True)
 
 st.markdown("---")
-st.caption("Powered by NASA ADS + HuggingFace 🤗")
+st.caption("Powered by NASA ADS + HuggingFace 🤗 + Ayesha Zafar")
