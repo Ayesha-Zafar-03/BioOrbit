@@ -6,7 +6,7 @@ import hashlib
 # =================================================
 # IMPORT SUMMARIZER
 # =================================================
-from utils.ai_summarizer import summarize_text  # <--- modular
+from utils.ai_summarizer import summarize_text
 
 # =================================================
 # SECRETS
@@ -57,16 +57,18 @@ input, textarea {
 }
 .result-card {
     background:#1A1A1A;
-    padding:12px;
+    padding:15px;
     border-radius:10px;
     border-left:4px solid #6BE6C1;
     margin-bottom:10px;
 }
 .summary-box {
-    background:#1A1A1A;
-    padding:15px;
+    background:#222222;
+    padding:12px;
     border-radius:8px;
     border-left:4px solid #6BE6C1;
+    margin-bottom:20px;
+    white-space: pre-line;
 }
 .link-button {
     background:#6BE6C1;
@@ -152,18 +154,25 @@ if query:
     for i, row in df.iterrows():
         article_id = hashlib.md5(row.title.encode()).hexdigest()
 
+        # Paper card
         st.markdown(f"""
         <div class="result-card">
             <h4>{row.title}</h4>
-            <p style="color:#aaa;">{row.authors} • {row.year}</p>
+            <p style="color:#aaa;"><b>Authors:</b> {row.authors} • <b>Year:</b> {row.year}</p>
             {"<a class='link-button' target='_blank' href='"+row.link+"'>🔗 View</a>" if row.link else ""}
         </div>
         """, unsafe_allow_html=True)
 
+        # Summary button + summary box
         if st.button(f"✨ Summarize {i+1}", key=f"s{i}"):
             if article_id not in st.session_state.summaries:
                 with st.spinner("🤖 Generating summary..."):
-                    st.session_state.summaries[article_id] = summarize_text(row.abstract)
+                    summary_text = summarize_text(row.abstract)
+
+                    # Convert to 4-bullet summary
+                    bullets = summary_text.split(". ")  # simple split by sentence
+                    bullets = [f"• {b.strip()}" for b in bullets if b][:4]  # take first 4 sentences
+                    st.session_state.summaries[article_id] = "<br>".join(bullets)
 
             st.markdown(f"""
             <div class="summary-box">
@@ -171,6 +180,9 @@ if query:
                 <p>{st.session_state.summaries[article_id]}</p>
             </div>
             """, unsafe_allow_html=True)
+
+        # Spacing between papers
+        st.markdown("<br>", unsafe_allow_html=True)
 
 st.markdown("---")
 st.caption("Powered by NASA ADS + HuggingFace 🤗")
