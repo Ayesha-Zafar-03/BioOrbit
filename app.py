@@ -2,13 +2,12 @@ import streamlit as st
 import pandas as pd
 import requests
 import hashlib
-from openai import OpenAI
 
 # =================================================
 # SECRETS
 # =================================================
 ADS_API_KEY = st.secrets.get("NASA_ADS_API_KEY", "")
-OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY", "")
+HF_API_KEY = st.secrets.get("HF_API_KEY", "")
 
 # =================================================
 # PAGE CONFIG
@@ -20,10 +19,10 @@ st.set_page_config(
 )
 
 # =================================================
-# DEBUG (REMOVE LATER)
+# DEBUG
 # =================================================
 st.write("NASA ADS key loaded:", bool(ADS_API_KEY))
-st.write("OpenAI key loaded:", bool(OPENAI_API_KEY))
+st.write("HF key loaded:", bool(HF_API_KEY))
 
 # =================================================
 # SESSION STATE
@@ -32,7 +31,7 @@ if "summaries" not in st.session_state:
     st.session_state.summaries = {}
 
 # =================================================
-# BLACK UI (UNCHANGED)
+# BLACK UI
 # =================================================
 st.markdown("""
 <style>
@@ -86,29 +85,38 @@ st.caption("Explore NASA Space Biology Research")
 # =================================================
 # STOP IF KEYS MISSING
 # =================================================
-if not ADS_API_KEY or not OPENAI_API_KEY:
+if not ADS_API_KEY or not HF_API_KEY:
     st.error("❌ API keys missing in Streamlit Secrets.")
     st.stop()
 
 # =================================================
-# OPENAI CLIENT
+# HF SUMMARIZER
 # =================================================
-client = OpenAI(api_key=OPENAI_API_KEY)
+HF_MODEL = "facebook/bart-large-cnn"
+HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
 
 def summarize_text(text):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Summarize this scientific abstract clearly in 3–4 sentences."},
-                {"role": "user", "content": text[:6000]}
-            ],
-            temperature=0.3,
-            max_tokens=200
-        )
-        return response.choices[0].message.content.strip()
-    except Exception as e:
-        return f"❌ AI Error: {e}"
+    headers = {
+        "Authorization": f"Bearer {HF_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "inputs": text[:3000],
+        "parameters": {
+            "max_length": 150,
+            "min_length": 60,
+            "do_sample": False
+        }
+    }
+
+    r = requests.post(HF_API_URL, headers=headers, json=payload, timeout=60)
+
+    if r.status_code != 200:
+        return f"❌ HF Error {r.status_code}: {r.text}"
+
+    result = r.json()
+    return result[0]["summary_text"]
 
 # =================================================
 # NASA ADS FETCH
@@ -145,10 +153,9 @@ def fetch_ads(query, rows, start):
     return pd.DataFrame(rows_data), total, ""
 
 # =================================================
-# SEARCH CONTROLS
+# SEARCH UI
 # =================================================
 query = st.text_input("Search Space Biology", placeholder="microgravity, radiation, plants")
-
 rows = st.slider("Results per page", 5, 30, 10)
 page = st.number_input("Page", min_value=1, step=1)
 start = (page - 1) * rows
@@ -166,7 +173,6 @@ if query:
         st.stop()
 
     st.success(f"📊 Total papers found: {total}")
-    st.caption(f"Page {page} • {rows} results")
 
     for i, row in df.iterrows():
         article_id = hashlib.md5(row.title.encode()).hexdigest()
@@ -192,4 +198,4 @@ if query:
             """, unsafe_allow_html=True)
 
 st.markdown("---")
-st.caption("Powered by NASA ADS + OpenAI")
+st.caption("Powered by NASA ADS + HuggingFace 🤗")
