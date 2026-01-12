@@ -1,8 +1,20 @@
+Perfect! Since this project was built for a **NASA Hackathon**, we should highlight that in the **title, description, and achievements** to make it more impressive to recruiters. Here’s an updated **recruiter-friendly `README.md`** including your hackathon achievement and certificate link:
+
+---
+
+````markdown
 # BioOrbit — AI-Powered NASA Research Explorer 🧬🌌
 
-**BioOrbit** is a web app that allows users to **search, explore, and summarize NASA Space Biology research articles**. By combining **AI summarization** and a **clean Streamlit interface**, it converts complex scientific papers into **short, digestible insights**, making research accessible and actionable.
+**BioOrbit** is a web app that allows users to **search, explore, and summarize NASA Space Biology research articles**. Built for the **NASA Hackathon**, it demonstrates how AI can make complex scientific research **accessible and actionable**.  
 
-This project showcases skills in **Python, AI/ML, web app development, API integration, and UX design**.
+This project showcases skills in **Python, AI/ML, API integration, data handling, and web app development**.
+
+---
+
+## 🏆 Achievements
+
+- Built for the **NASA Hackathon** and recognized for innovative use of AI in space biology research.  
+- Certificate: [View on LinkedIn](https://www.linkedin.com/in/ayesha-zafar03/details/certifications/1766219867831/single-media-viewer/?profileId=ACoAAEZ2YVsBLGhwcNHEkxQm5iYEemAyoYlrWoE)  
 
 ---
 
@@ -12,54 +24,33 @@ This project showcases skills in **Python, AI/ML, web app development, API integ
   Find research on microgravity, radiation, stem cells, plant biology, and more via **NASA ADS API**.  
 
 - 🤖 **AI-Powered Summaries**  
-  Summarizes scientific abstracts using **HuggingFace BART model**, generating **4-bullet concise summaries** for easy reading.  
+  Uses **HuggingFace BART model** to summarize abstracts into **4 concise bullet points** for easy reading.  
 
 - 📊 **Interactive Dashboard**  
-  Designed with **Streamlit**, featuring a sleek **dark-mode UI** and **interactive buttons** for summaries and article links.  
+  Streamlit-based **dark-mode UI** with article cards, summary buttons, and direct links.  
 
 - ☁️ **Live Demo**  
-  Hosted on Streamlit Cloud for easy demonstration and sharing.  
+  Hosted on Streamlit Cloud for easy sharing: [BioOrbit App](https://bioorbit.streamlit.app/)  
 
 ---
 
 ## 💻 Tech Stack
 
-- **Language:** Python  
-- **Web Framework:** Streamlit  
-- **AI/ML:** HuggingFace Transformers (BART-large-cnn)  
-- **Data Handling:** pandas, JSON  
-- **APIs:** NASA ADS API, HuggingFace Inference API  
-- **UI/UX:** Custom CSS for interactive dark-themed dashboard  
-
----
-
-## 🌟 Live Demo
-
-🔗 [BioOrbit App](https://bioorbit.streamlit.app/)  
-
----
-
-## 📂 Project Structure (Highlights)
-
-```plaintext
-BioOrbit/
-├─ app.py                  # Main Streamlit app
-├─ utils/
-│   └─ ai_summarizer.py    # AI summarization logic
-├─ summary_cache.json       # Local cache for generated summaries
-├─ requirements.txt         # Python dependencies
-└─ README.md
-````
+- **Python, Streamlit**  
+- **HuggingFace Transformers (BART-large-cnn)**  
+- **NASA ADS API & HuggingFace API**  
+- **pandas, JSON, requests**  
+- **Custom CSS for UI/UX**  
 
 ---
 
 ## 🎯 Skills Demonstrated
 
-* **AI & NLP Integration:** Summarizing scientific text with HuggingFace.
-* **Full-Stack Python Development:** Streamlit dashboard with interactive UI.
-* **API Integration:** NASA ADS and HuggingFace APIs with proper error handling.
-* **Data Management:** Local caching, session state, JSON handling for efficient performance.
-* **UX/UI Design:** Dark mode dashboard with styled cards, buttons, and summaries.
+- AI & NLP integration for summarization  
+- API integration and data handling  
+- Full-stack Python dashboard development  
+- UX/UI design for interactive apps  
+- Efficient caching and session state management  
 
 ---
 
@@ -70,7 +61,7 @@ BioOrbit/
 ```bash
 git clone https://github.com/Ayesha-Zafar-03/BioOrbit.git
 cd BioOrbit
-```
+````
 
 2. Install dependencies:
 
@@ -95,10 +86,10 @@ streamlit run app.py
 
 ## 🌱 Future Enhancements
 
-* Integrate **real-time NASA research datasets**.
-* Add **visual analytics** and trends for research topics.
-* Expand summaries to **full papers and experiments**.
-* Implement **knowledge graphs** for advanced research navigation.
+* Integrate **real-time NASA datasets**
+* Add **visual analytics & trend charts**
+* Expand summaries to **full papers & experiments**
+* Implement **knowledge graphs for advanced research navigation**
 
 ---
 
@@ -106,6 +97,8 @@ streamlit run app.py
 
 Created by **Ayesha Zafar** — [GitHub Profile](https://github.com/Ayesha-Zafar-03)
 
+✨ *BioOrbit transforms complex space biology research into actionable insights, showcasing AI innovation at NASA Hackathon.*
+
+```
 
 ---
-
