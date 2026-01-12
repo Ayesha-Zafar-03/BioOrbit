@@ -1,44 +1,49 @@
 import requests
+
+HF_MODEL = "facebook/bart-large-cnn"
+HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+
 def summarize_text(text):
     """
-    Generate AI summary using Groq API and show full error if it fails.
+    Generate AI summary using HuggingFace Inference API
+    and show full error if it fails.
     """
-    if not GROQ_API_KEY:
-        return "❌ GROQ API key missing."
+    if not HF_API_KEY:
+        return "❌ HuggingFace API key missing."
 
-    truncated_text = text[:6000]
-
-    url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Authorization": f"Bearer {HF_API_KEY}",
         "Content-Type": "application/json"
     }
+
     payload = {
-        "model": "llama3-8b-8192",
-        "messages": [
-            {"role": "system", "content": "Summarize this NASA space biology research in clear academic language."},
-            {"role": "user", "content": truncated_text}
-        ],
-        "temperature": 0.3,
-        "max_tokens": 200
+        "inputs": text[:3000],  # HF input limit
+        "parameters": {
+            "max_length": 150,
+            "min_length": 60,
+            "do_sample": False
+        }
     }
 
     try:
-        r = requests.post(url, headers=headers, json=payload, timeout=30)
+        r = requests.post(
+            HF_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=60
+        )
 
-        # 🔥 SHOW FULL ERROR
         if r.status_code != 200:
-            return f"❌ Groq API Error {r.status_code}: {r.text}"
+            return f"❌ HF API Error {r.status_code}: {r.text}"
 
-        response_json = r.json()
-        choices = response_json.get("choices", [])
-        if not choices:
-            return "❌ Groq API Error: No choices returned."
+        result = r.json()
 
-        return choices[0]["message"]["content"]
+        if isinstance(result, dict) and result.get("error"):
+            return f"❌ HF Model Error: {result['error']}"
+
+        return result[0]["summary_text"]
 
     except requests.exceptions.RequestException as e:
-        return f"❌ Groq Request Exception: {str(e)}"
+        return f"❌ HF Request Exception: {str(e)}"
     except Exception as e:
-        return f"❌ Groq Unknown Error: {str(e)}"
-
+        return f"❌ HF Unknown Error: {str(e)}"
