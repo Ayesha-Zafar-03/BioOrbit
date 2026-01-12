@@ -94,7 +94,7 @@ if not ADS_API_KEY or not HF_API_KEY:
 # =================================================
 HF_MODEL = "facebook/bart-large-cnn"
 HF_API_URL = f"HF_API_URL = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn"
-"
+
 
 def summarize_text(text):
     headers = {
