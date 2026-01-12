@@ -1,6 +1,15 @@
 import requests
+import streamlit as st  # important!
+
+# Fetch HF key from Streamlit secrets here
+HF_API_KEY = st.secrets.get("HF_API_KEY", "")
+
+HF_API_URL = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn"
 
 def summarize_text(text):
+    """
+    Summarize scientific text using HuggingFace Inference API
+    """
     if not HF_API_KEY:
         return "❌ HuggingFace API key missing."
 
@@ -19,12 +28,7 @@ def summarize_text(text):
     }
 
     try:
-        r = requests.post(
-            "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn",
-            headers=headers,
-            json=payload,
-            timeout=60
-        )
+        r = requests.post(HF_API_URL, headers=headers, json=payload, timeout=60)
 
         if r.status_code != 200:
             return f"❌ HF Error {r.status_code}: {r.text}"
@@ -36,5 +40,5 @@ def summarize_text(text):
 
         return result[0]["summary_text"]
 
-    except requests.exceptions.RequestException as e:
-        return f"❌ HF Request Exception: {e}"
+    except Exception as e:
+        return f"❌ HF Exception: {e}"
