@@ -1,8 +1,3 @@
-Perfect! Since this project was built for a **NASA Hackathon**, we should highlight that in the **title, description, and achievements** to make it more impressive to recruiters. Here’s an updated **recruiter-friendly `README.md`** including your hackathon achievement and certificate link:
-
----
-
-````markdown
 # BioOrbit — AI-Powered NASA Research Explorer 🧬🌌
 
 **BioOrbit** is a web app that allows users to **search, explore, and summarize NASA Space Biology research articles**. Built for the **NASA Hackathon**, it demonstrates how AI can make complex scientific research **accessible and actionable**.  
