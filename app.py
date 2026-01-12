@@ -4,10 +4,14 @@ import requests
 import hashlib
 
 # =================================================
+# IMPORT SUMMARIZER
+# =================================================
+from utils.ai_summarizer import summarize_text  # <--- modular
+
+# =================================================
 # SECRETS
 # =================================================
 ADS_API_KEY = st.secrets.get("NASA_ADS_API_KEY", "")
-HF_API_KEY = st.secrets.get("HF_API_KEY", "")
 
 # =================================================
 # PAGE CONFIG
@@ -22,7 +26,6 @@ st.set_page_config(
 # DEBUG
 # =================================================
 st.write("NASA ADS key loaded:", bool(ADS_API_KEY))
-st.write("HF key loaded:", bool(HF_API_KEY))
 
 # =================================================
 # SESSION STATE
@@ -85,39 +88,9 @@ st.caption("Explore NASA Space Biology Research")
 # =================================================
 # STOP IF KEYS MISSING
 # =================================================
-if not ADS_API_KEY or not HF_API_KEY:
-    st.error("❌ API keys missing in Streamlit Secrets.")
+if not ADS_API_KEY:
+    st.error("❌ NASA ADS API key missing in Streamlit Secrets.")
     st.stop()
-
-# =================================================
-# HF SUMMARIZER
-# =================================================
-HF_MODEL = "facebook/bart-large-cnn"
-HF_API_URL = f"HF_API_URL = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn"
-
-
-def summarize_text(text):
-    headers = {
-        "Authorization": f"Bearer {HF_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "inputs": text[:3000],
-        "parameters": {
-            "max_length": 150,
-            "min_length": 60,
-            "do_sample": False
-        }
-    }
-
-    r = requests.post(HF_API_URL, headers=headers, json=payload, timeout=60)
-
-    if r.status_code != 200:
-        return f"❌ HF Error {r.status_code}: {r.text}"
-
-    result = r.json()
-    return result[0]["summary_text"]
 
 # =================================================
 # NASA ADS FETCH
@@ -174,6 +147,7 @@ if query:
         st.stop()
 
     st.success(f"📊 Total papers found: {total}")
+    st.caption(f"Page {page} • {rows} results")
 
     for i, row in df.iterrows():
         article_id = hashlib.md5(row.title.encode()).hexdigest()
