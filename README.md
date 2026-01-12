@@ -106,9 +106,6 @@ streamlit run app.py
 
 Created by **Ayesha Zafar** — [GitHub Profile](https://github.com/Ayesha-Zafar-03)
 
-✨ *BioOrbit transforms complex space biology research into actionable insights, empowering scientists, students, and AI enthusiasts.*
-
-```
 
 ---
 
