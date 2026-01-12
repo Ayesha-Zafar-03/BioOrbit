@@ -1,13 +1,9 @@
 import requests
 
 HF_MODEL = "facebook/bart-large-cnn"
-HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+HF_API_URL = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL}"
 
 def summarize_text(text):
-    """
-    Generate AI summary using HuggingFace Inference API
-    and show full error if it fails.
-    """
     if not HF_API_KEY:
         return "❌ HuggingFace API key missing."
 
@@ -17,7 +13,7 @@ def summarize_text(text):
     }
 
     payload = {
-        "inputs": text[:3000],  # HF input limit
+        "inputs": text[:3000],
         "parameters": {
             "max_length": 150,
             "min_length": 60,
@@ -34,10 +30,11 @@ def summarize_text(text):
         )
 
         if r.status_code != 200:
-            return f"❌ HF API Error {r.status_code}: {r.text}"
+            return f"❌ HF Error {r.status_code}: {r.text}"
 
         result = r.json()
 
+        # Safety check
         if isinstance(result, dict) and result.get("error"):
             return f"❌ HF Model Error: {result['error']}"
 
@@ -45,5 +42,3 @@ def summarize_text(text):
 
     except requests.exceptions.RequestException as e:
         return f"❌ HF Request Exception: {str(e)}"
-    except Exception as e:
-        return f"❌ HF Unknown Error: {str(e)}"
