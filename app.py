@@ -522,22 +522,104 @@ header[data-testid="stHeader"] {{ display: none !important; }}
     background: linear-gradient(135deg,#3730a3,#4f46e5) !important;
 }}
 .stSelectbox > div > div {{
-    border-radius: 8px !important; border: 1.5px solid #d5dcea !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #d5dcea !important;
     background: #fff !important;
+    color: #172554 !important;
 }}
+.stSelectbox > div > div > div {{
+    color: #172554 !important;
+}}
+.stSelectbox svg {{
+    fill: #64748b !important;
+}}
+/* Selectbox dropdown options */
+[data-testid="stSelectbox"] > div > div {{
+    background: #fff !important;
+    color: #172554 !important;
+}}
+
+/* Number input */
 .stNumberInput > div > div > input {{
-    border-radius: 8px !important; border: 1.5px solid #d5dcea !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #d5dcea !important;
+    background: #fff !important;
+    color: #172554 !important;
+    height: 46px !important;
 }}
+.stNumberInput > div > div {{
+    background: #fff !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #d5dcea !important;
+    overflow: hidden;
+}}
+.stNumberInput button {{
+    background: #f4f6fb !important;
+    color: #172554 !important;
+    border: none !important;
+    border-left: 1px solid #d5dcea !important;
+}}
+.stNumberInput button:hover {{
+    background: #e8ecf6 !important;
+}}
+
+/* Expander — fix arrow/label overlap */
 [data-testid="stExpander"] {{
     border: 1px solid #e0e6f0 !important;
     border-radius: 9px !important;
     background: #fff !important;
     margin-bottom: 7px !important;
 }}
-[data-testid="stExpander"] summary {{
+[data-testid="stExpander"] > details > summary {{
     font-size: 12.5px !important;
     color: #475569 !important;
     font-weight: 500 !important;
+    padding: 10px 14px !important;
+    list-style: none !important;
+    display: flex !important;
+    align-items: center !important;
+    cursor: pointer !important;
+}}
+/* hide the browser default arrow */
+[data-testid="stExpander"] > details > summary::-webkit-details-marker {{
+    display: none !important;
+}}
+[data-testid="stExpander"] > details > summary::marker {{
+    display: none !important;
+    content: "" !important;
+}}
+/* hide streamlit's injected _arrowRight / _arrowDown span */
+[data-testid="stExpander"] summary span[data-testid="stExpanderToggleIcon"] {{
+    display: none !important;
+}}
+/* Streamlit also injects a p tag with the label — style it */
+[data-testid="stExpander"] summary p {{
+    font-size: 12.5px !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+}}
+
+/* Fix all form labels */
+.stSelectbox label,
+.stNumberInput label,
+.stTextInput label {{
+    color: #64748b !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+}}
+
+/* Fix select dropdown list items */
+[role="listbox"] li,
+[role="option"] {{
+    color: #172554 !important;
+    background: #fff !important;
+    font-size: 13px !important;
+}}
+[role="listbox"] {{
+    background: #fff !important;
+    border: 1px solid #d5dcea !important;
+    border-radius: 8px !important;
 }}
 
 @media (max-width:900px) {{
