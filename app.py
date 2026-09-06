@@ -132,134 +132,182 @@ header[data-testid="stHeader"] {{ display: none !important; }}
 }}
 
 /* ═══════════════════════════════════════════════════════════
-   SIDEBAR — no scroll, stays in normal flow
+   SIDEBAR
    ═══════════════════════════════════════════════════════════ */
 
 [data-testid="stSidebar"] {{
-    background: #0a101f !important;
+    background: #0b1120 !important;
     min-width: 240px !important;
     max-width: 240px !important;
 }}
 
-/* The actual scrollable container Streamlit uses */
-[data-testid="stSidebar"] > div:first-child {{
-    overflow: hidden !important;
-    height: 100vh !important;
-}}
-
-/* The inner content wrapper — make it a flex column so footer pins to bottom */
+/* kill scroll on every layer */
+[data-testid="stSidebar"],
+[data-testid="stSidebar"] > div,
+[data-testid="stSidebar"] > div > div,
 [data-testid="stSidebarContent"] {{
     overflow: hidden !important;
+    scrollbar-width: none !important;
+}}
+[data-testid="stSidebar"] *::-webkit-scrollbar {{ display:none !important; }}
+
+/* make the content area a flex column that fills the screen */
+[data-testid="stSidebarContent"] {{
     height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
-    padding: 22px 14px 20px !important;
+    padding: 0 !important;
     gap: 0 !important;
 }}
 
-/* Streamlit wraps each element in a div — allow flex growth */
+/* every direct child block gets no extra margin */
 [data-testid="stSidebarContent"] > div {{
-    flex-shrink: 0;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }}
 
-/* kill scrollbar on any nested overflow */
-[data-testid="stSidebar"] * {{
-    scrollbar-width: none !important;
-}}
-[data-testid="stSidebar"] *::-webkit-scrollbar {{
-    display: none !important;
+/* the spacer div we inject — let it grow */
+[data-testid="stSidebarContent"] > div.sb-spacer-block {{
+    flex: 1 !important;
 }}
 
-/* ── brand ── */
+/* ── brand header ── */
 .sb-brand {{
     display: flex;
     align-items: center;
-    gap: 11px;
-    padding-bottom: 18px;
-    margin-bottom: 10px;
+    gap: 12px;
+    padding: 22px 16px 18px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
-    flex-shrink: 0;
+    margin-bottom: 8px;
 }}
 
 .orbit-logo {{
     width: 44px; height: 44px;
     border-radius: 50%;
-    border: 2.5px solid #7c6ff0;
+    border: 2.5px solid #6d5fe6;
     display: flex; align-items: center; justify-content: center;
     position: relative; flex-shrink: 0;
+    background: transparent;
 }}
 .orbit-logo::before {{
     content: "";
     position: absolute;
-    width: 58px; height: 19px;
-    border: 2px solid #7c6ff0;
+    width: 60px; height: 20px;
+    border: 2px solid #6d5fe6;
     border-radius: 50%;
-    transform: rotate(-30deg);
-    pointer-events: none;
+    transform: rotate(-28deg);
 }}
 .orbit-dot {{
-    width: 10px; height: 10px;
-    background: #a78bfa;
-    border-radius: 50%;
-    position: relative; z-index: 1;
+    width: 11px; height: 11px;
+    background: #a78bfa; border-radius: 50%;
+    position: relative; z-index: 2;
 }}
+.sb-name  {{ color:#fff; font-size:20px; font-weight:800; line-height:1.1; }}
+.sb-sub   {{ color:#5a6e88; font-size:10.5px; line-height:1.5; margin-top:4px; }}
 
-.sb-name {{ color:#fff; font-size:20px; font-weight:800; line-height:1; }}
-.sb-sub  {{ color:#6b7e99; font-size:10.5px; line-height:1.45; margin-top:3px; }}
-
-/* ── nav links ── */
-.sb-nav {{
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    overflow: hidden;
+/* ── nav buttons ── */
+[data-testid="stSidebar"] .stButton {{
+    padding: 0 10px !important;
+    margin-bottom: 2px !important;
 }}
-
-/* override streamlit button inside sidebar */
 [data-testid="stSidebar"] .stButton > button {{
     background: transparent !important;
     border: none !important;
-    color: #6b7e99 !important;
-    text-align: left !important;
-    border-radius: 8px !important;
-    padding: 10px 12px !important;
-    margin: 0 !important;
-    font-size: 13.5px !important;
-    font-weight: 500 !important;
-    box-shadow: none !important;
-    width: 100% !important;
-    transition: all .15s ease;
-    justify-content: flex-start !important;
-}}
-[data-testid="stSidebar"] .stButton > button:hover {{
-    background: rgba(99,102,241,0.12) !important;
-    color: #fff !important;
-}}
-[data-testid="stSidebar"] .stButton > button:focus {{
     box-shadow: none !important;
     outline: none !important;
+    border-radius: 9px !important;
+    width: 100% !important;
+    padding: 11px 14px !important;
+    text-align: left !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: #6b7e99 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    transition: background .15s, color .15s !important;
+    height: auto !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0 !important;
+}}
+[data-testid="stSidebar"] .stButton > button:hover {{
+    background: rgba(99,102,241,0.13) !important;
+    color: #e2e8f0 !important;
+}}
+[data-testid="stSidebar"] .stButton > button:focus,
+[data-testid="stSidebar"] .stButton > button:active {{
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+}}
+/* active nav highlight */
+.nav-active [data-testid="stSidebar"] .stButton > button {{
+    background: linear-gradient(90deg, #3d35b8, #4f46e5) !important;
+    color: #ffffff !important;
 }}
 
-/* active nav item */
-.nav-active [data-testid="stSidebar"] .stButton > button {{
-    background: linear-gradient(90deg, #4338ca, #4f46e5) !important;
-    color: #fff !important;
+/* ── nav icon images via nth-child on the stButton wrappers ──
+   Streamlit renders: brand-div | btn1 | btn2 | btn3 | btn4 | spacer | footer
+   The brand is a markdown div = child 1
+   Buttons are children 2-5 (but wrapped in divs by Streamlit)
+   We use background-image SVG data URIs on a ::before pseudo of each button ── */
+
+/* Home icon */
+[data-testid="stSidebarContent"] > div:nth-child(2) .stButton > button::before {{
+    content: "";
+    display: inline-block;
+    width: 16px; height: 16px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7e99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Cpolyline points='9 22 9 12 15 12 15 22'/%3E%3C/svg%3E") center/contain no-repeat;
+    margin-right: 8px;
+    vertical-align: middle;
+}}
+.nav-active:nth-of-type(1) [data-testid="stSidebar"] .stButton > button::before,
+[data-testid="stSidebarContent"] > div:nth-child(2) .nav-active .stButton > button::before {{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Cpolyline points='9 22 9 12 15 12 15 22'/%3E%3C/svg%3E");
+}}
+
+/* Search icon */
+[data-testid="stSidebarContent"] > div:nth-child(3) .stButton > button::before {{
+    content: "";
+    display: inline-block;
+    width: 16px; height: 16px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7e99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") center/contain no-repeat;
+    margin-right: 8px;
+    vertical-align: middle;
+}}
+
+/* Saved Summaries icon */
+[data-testid="stSidebarContent"] > div:nth-child(4) .stButton > button::before {{
+    content: "";
+    display: inline-block;
+    width: 16px; height: 16px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7e99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z'/%3E%3C/svg%3E") center/contain no-repeat;
+    margin-right: 8px;
+    vertical-align: middle;
+}}
+
+/* About icon */
+[data-testid="stSidebarContent"] > div:nth-child(5) .stButton > button::before {{
+    content: "";
+    display: inline-block;
+    width: 16px; height: 16px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7e99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E") center/contain no-repeat;
+    margin-right: 8px;
+    vertical-align: middle;
 }}
 
 /* ── sidebar footer ── */
 .sb-foot {{
-    flex-shrink: 0;
-    padding-top: 16px;
+    padding: 16px 16px 20px;
     border-top: 1px solid rgba(255,255,255,0.06);
-    margin-top: 10px;
+    margin-top: 4px;
 }}
-.sb-nasa {{ width: 56px; height: auto; display: block; margin-bottom: 8px; }}
-.sb-powered {{
-    font-size: 11px; color: #7a8fa8; line-height: 1.55;
-}}
-.sb-powered b {{ color: #b8cae0; }}
-.sb-tag {{ font-size: 10.5px; color: #3e4f62; line-height: 1.55; margin-top: 8px; }}
+.sb-nasa  {{ width: 58px; height: auto; display: block; margin-bottom: 9px; }}
+.sb-pow   {{ font-size: 11px; color: #7a8fa8; line-height: 1.55; }}
+.sb-pow b {{ color: #b8cae0; }}
+.sb-tag   {{ font-size: 10px; color: #3a4d61; line-height: 1.6; margin-top: 8px; }}
 
 /* ═══════════════════════════════════════════════════════════
    HERO BANNER
@@ -733,7 +781,7 @@ with st.sidebar:
         else "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/2449px-NASA_logo.svg.png"
     )
 
-    # Brand block
+    # ── Brand ──
     st.markdown(f"""
     <div class="sb-brand">
       <div class="orbit-logo"><div class="orbit-dot"></div></div>
@@ -744,7 +792,10 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    # Nav buttons
+    # ── Nav items with SVG icons in label ──
+    # Streamlit buttons accept plain text only, so we add a top-level
+    # CSS rule that injects icon pseudo-elements via data attributes,
+    # OR we use st.markdown divs around each button for active state.
     nav_items = [
         ("Dashboard",       "Home"),
         ("Search",          "Search"),
@@ -756,20 +807,24 @@ with st.sidebar:
         active = st.session_state.active_nav == page
         if active:
             st.markdown("<div class='nav-active'>", unsafe_allow_html=True)
-        if st.button(label, key=f"nav_{page}", use_container_width=True):
+        clicked = st.button(label, key=f"nav_{page}", use_container_width=True)
+        if clicked:
             st.session_state.active_nav = page
             st.rerun()
         if active:
             st.markdown("</div>", unsafe_allow_html=True)
 
-    # Spacer that pushes footer down
-    st.markdown("<div style='flex:1'></div>", unsafe_allow_html=True)
+    # ── Spacer — pushes footer to bottom ──
+    st.markdown(
+        "<div style='flex:1;min-height:20px'></div>",
+        unsafe_allow_html=True,
+    )
 
-    # Footer
+    # ── Footer ──
     st.markdown(f"""
     <div class="sb-foot">
       <img class="sb-nasa" src="{nasa_src}">
-      <div class="sb-powered"><b>Powered by NASA ADS</b><br>+ HuggingFace</div>
+      <div class="sb-pow"><b>Powered by NASA ADS</b><br>+ HuggingFace</div>
       <div class="sb-tag">Making space biology research<br>accessible and actionable through AI.</div>
     </div>
     """, unsafe_allow_html=True)
