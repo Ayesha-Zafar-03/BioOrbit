@@ -90,8 +90,8 @@ header {{ display: none !important; }}
    ════════════════════════════════════════ */
 [data-testid="stSidebar"] {{
     background: #0b1120 !important;
-    min-width: 230px !important;
-    max-width: 230px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
 }}
 [data-testid="stSidebar"] > div:first-child,
 [data-testid="stSidebarContent"] {{
@@ -107,59 +107,82 @@ header {{ display: none !important; }}
     padding: 0 !important;
     gap: 0 !important;
 }}
+/* zero out all Streamlit-injected wrappers */
 [data-testid="stSidebarContent"] > div {{
     flex-shrink: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
+    min-height: 0 !important;
+}}
+/* kill element-container spacing inside sidebar */
+[data-testid="stSidebar"] .element-container,
+[data-testid="stSidebar"] .stVerticalBlock,
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }}
 
-/* brand block */
+/* ── brand ── */
 .sb-brand {{
-    display: flex; align-items: center; gap: 12px;
-    padding: 20px 16px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 14px 14px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }}
 .orbit-logo {{
-    width: 42px; height: 42px; border-radius: 50%;
-    border: 2.5px solid #6d5fe6;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 2px solid #6d5fe6;
     display: flex; align-items: center; justify-content: center;
     position: relative; flex-shrink: 0;
 }}
 .orbit-logo::before {{
     content: ""; position: absolute;
-    width: 56px; height: 18px;
-    border: 2px solid #6d5fe6; border-radius: 50%;
+    width: 50px; height: 16px;
+    border: 2px solid #6d5fe6;
+    border-radius: 50%;
     transform: rotate(-28deg);
 }}
 .orbit-dot {{
-    width: 10px; height: 10px; background: #a78bfa;
-    border-radius: 50%; position: relative; z-index: 2;
+    width: 9px; height: 9px;
+    background: #a78bfa; border-radius: 50%;
+    position: relative; z-index: 2;
 }}
-.sb-name {{ color: #fff; font-size: 19px; font-weight: 800; line-height: 1.1; }}
-.sb-sub  {{ color: #5a6e88; font-size: 10px; line-height: 1.5; margin-top: 3px; }}
+.sb-name {{ color: #fff; font-size: 17px; font-weight: 800; line-height: 1.1; }}
+.sb-sub  {{ color: #4e6175; font-size: 9.5px; line-height: 1.45; margin-top: 2px; }}
 
-/* nav item wrapper */
+/* ── nav item wrapper — very tight ── */
 .nav-item {{
-    padding: 2px 10px;
-    margin-bottom: 1px;
+    padding: 1px 8px;
+    margin: 0 !important;
 }}
 
-/* nav buttons */
+/* ── nav buttons — compact ── */
 [data-testid="stSidebar"] .stButton > button {{
     background: transparent !important;
-    border: none !important; box-shadow: none !important; outline: none !important;
-    border-radius: 8px !important; width: 100% !important;
-    padding: 10px 12px 10px 38px !important;
-    text-align: left !important; font-size: 13px !important;
-    font-weight: 500 !important; color: #6b7e99 !important;
-    display: block !important; position: relative !important;
-    transition: background .15s, color .15s !important;
-    height: auto !important; line-height: 1.4 !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 7px !important;
+    width: 100% !important;
+    padding: 7px 10px 7px 34px !important;
+    text-align: left !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    color: #6b7e99 !important;
+    display: block !important;
+    position: relative !important;
+    transition: background .12s, color .12s !important;
+    height: auto !important;
+    line-height: 1.3 !important;
     white-space: nowrap !important;
+    letter-spacing: 0 !important;
 }}
 [data-testid="stSidebar"] .stButton > button:hover {{
-    background: rgba(99,102,241,0.13) !important;
+    background: rgba(99,102,241,0.12) !important;
     color: #c8d5e8 !important;
 }}
 [data-testid="stSidebar"] .stButton > button:focus,
@@ -179,11 +202,11 @@ header {{ display: none !important; }}
 .nav-saved  .stButton > button::before,
 .nav-about  .stButton > button::before {{
     content: "";
-    position: absolute; left: 12px; top: 50%;
+    position: absolute; left: 10px; top: 50%;
     transform: translateY(-50%);
-    width: 16px; height: 16px;
+    width: 15px; height: 15px;
     background: center/contain no-repeat;
-    opacity: 0.55;
+    opacity: 0.5;
 }}
 .nav-active .stButton > button::before {{ opacity: 1 !important; }}
 
@@ -214,13 +237,13 @@ header {{ display: none !important; }}
 
 /* sidebar footer */
 .sb-foot {{
-    padding: 14px 16px 18px;
+    padding: 12px 14px 16px;
     border-top: 1px solid rgba(255,255,255,0.06);
 }}
-.sb-nasa {{ width: 54px; height: auto; display: block; margin-bottom: 8px; }}
-.sb-pow  {{ font-size: 10.5px; color: #7a8fa8; line-height: 1.55; }}
+.sb-nasa {{ width: 48px; height: auto; display: block; margin-bottom: 7px; }}
+.sb-pow  {{ font-size: 10px; color: #7a8fa8; line-height: 1.5; }}
 .sb-pow b {{ color: #b8cae0; }}
-.sb-tag  {{ font-size: 9.5px; color: #38495c; line-height: 1.6; margin-top: 7px; }}
+.sb-tag  {{ font-size: 9px; color: #38495c; line-height: 1.55; margin-top: 6px; }}
 
 /* ════════════════════════════════════════
    HERO
