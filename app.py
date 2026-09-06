@@ -210,63 +210,42 @@ header, [data-testid="stHeader"], [data-testid="stToolbar"],
    ══════════════════════════════════════════════ */
 .hero {{
     border-radius: 16px; overflow: hidden;
-    min-height: 300px;
+    min-height: 220px;
     background:
         linear-gradient(90deg,
-            rgba(3,8,22,.96)  0%,
-            rgba(3,8,22,.88) 30%,
-            rgba(3,8,22,.18) 62%,
+            rgba(3,8,22,.97)  0%,
+            rgba(3,8,22,.90) 28%,
+            rgba(3,8,22,.10) 58%,
             transparent      100%),
         {hero_bg};
     background-size: cover !important;
     background-position: center center !important;
-    padding: 36px 36px 30px;
-    margin-bottom: 0;
+    padding: 34px 36px 30px;
+    margin-bottom: 12px;
     position: relative;
 }}
-
-/* title */
 .hero-h1 {{
     color: #fff; font-size: 38px; font-weight: 800;
     letter-spacing: -1px; line-height: 1.1; margin: 0 0 10px;
 }}
 .hero-h1 span {{ color: #8b7cf6; }}
-.hero-p {{ color: #b8cbdf; font-size: 14px; line-height: 1.65; max-width: 500px; margin: 0 0 22px; }}
+.hero-p {{ color: #b8cbdf; font-size: 14px; line-height: 1.65; max-width: 500px; margin: 0; }}
 
-/* search bar INSIDE hero */
-.hero-search-wrap {{
-    display: flex; align-items: center;
-    background: rgba(255,255,255,0.97);
-    border-radius: 10px; overflow: hidden;
-    max-width: 680px; margin-bottom: 18px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-}}
-.hero-search-icon {{
-    padding: 0 12px 0 16px; display: flex; align-items: center; flex-shrink: 0;
-}}
-.hero-search-input {{
-    flex: 1; border: none; outline: none; background: transparent;
-    font-size: 13.5px; color: #172554; padding: 13px 0;
-    font-family: 'Inter', sans-serif;
-}}
-.hero-search-input::placeholder {{ color: #94a3b8; }}
-.hero-search-btn {{
-    background: linear-gradient(135deg, #4338ca, #6366f1);
-    color: #fff; border: none; padding: 12px 28px;
-    font-size: 13.5px; font-weight: 700; cursor: pointer;
-    font-family: 'Inter', sans-serif; white-space: nowrap;
-    transition: background .15s;
-}}
-.hero-search-btn:hover {{ background: linear-gradient(135deg,#3730a3,#4f46e5); }}
-
-/* popular chips */
-.pop-row {{ display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }}
+/* popular chips — dark (inside hero) */
+.pop-row {{ display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 8px; }}
 .pop-lbl {{ color: #94a3b8; font-size: 12px; white-space: nowrap; }}
 .chip {{
     padding: 4px 13px; border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.22);
     background: rgba(255,255,255,0.06);
     color: #c0cfe4; font-size: 11px; cursor: default;
+}}
+/* light chips below hero */
+.chip-light {{
+    padding: 4px 12px; border-radius: 20px;
+    border: 1px solid #d5dcea;
+    background: #f4f6fb;
+    color: #64748b; font-size: 11px; cursor: default;
 }}
 
 /* ── stat panel (right of hero) ── */
@@ -540,42 +519,36 @@ if st.session_state.active_nav == "Dashboard":
     hero_col, stat_col = st.columns([3.8, 1], gap="medium")
 
     with hero_col:
-        # Hero renders as pure HTML div with Earth bg-image
         st.markdown(f"""
         <div class="hero">
           <div class="hero-h1">Welcome to <span>BioOrbit</span></div>
           <div class="hero-p">Search, explore, and understand NASA-funded research
           on how spaceflight affects living organisms.</div>
-
-          <form action="" method="get" style="margin-bottom:16px">
-            <div class="hero-search-wrap">
-              <div class="hero-search-icon">
-                {ico(_SEARCH, 16, "#94a3b8")}
-              </div>
-              <input class="hero-search-input" name="_hero_q"
-                     placeholder="Try searching for a topic (e.g. microgravity, radiation biology, plant science...)"
-                     autocomplete="off">
-              <button type="submit" class="hero-search-btn">Search</button>
-            </div>
-          </form>
-
-          <div class="pop-row">
-            <span class="pop-lbl">Popular searches:</span>
-            <span class="chip">microgravity</span>
-            <span class="chip">radiation biology</span>
-            <span class="chip">space plants</span>
-            <span class="chip">human health</span>
-            <span class="chip">astrobiology</span>
-          </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Handle hero search form submission via query params
-        hero_q = st.query_params.get("_hero_q", "")
-        if hero_q:
+        # Working Streamlit search bar — styled to sit flush inside the hero visually
+        sc1, sc2 = st.columns([6, 1], gap="small")
+        with sc1:
+            dq = st.text_input("", placeholder="Try searching for a topic (e.g. microgravity, radiation biology, plant science...)",
+                               label_visibility="collapsed", key="dash_q")
+        with sc2:
+            dgo = st.button("Search", type="primary", use_container_width=True, key="dash_go")
+
+        st.markdown("""
+        <div class="pop-row" style="margin-top:8px">
+          <span class="pop-lbl">Popular searches:</span>
+          <span class="chip-light">microgravity</span>
+          <span class="chip-light">radiation biology</span>
+          <span class="chip-light">space plants</span>
+          <span class="chip-light">human health</span>
+          <span class="chip-light">astrobiology</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if dgo and dq.strip():
             st.session_state.active_nav   = "Search"
-            st.session_state.search_query = hero_q
-            st.query_params.clear()
+            st.session_state.search_query = dq.strip()
             st.rerun()
 
     with stat_col:
@@ -595,19 +568,6 @@ if st.session_state.active_nav == "Dashboard":
           </div>
         </div>
         """, unsafe_allow_html=True)
-
-    # ── Also keep a Streamlit search bar below for dashboard ──
-    st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
-    a, b = st.columns([6, 1], gap="small")
-    with a:
-        dq = st.text_input("", placeholder="Or type here and press Search…",
-                           label_visibility="collapsed", key="dash_q")
-    with b:
-        dgo = st.button("Search", type="primary", use_container_width=True, key="dash_go")
-    if dgo and dq.strip():
-        st.session_state.active_nav   = "Search"
-        st.session_state.search_query = dq.strip()
-        st.rerun()
 
     # ── Feature cards ─────────────────────────────────────────
     st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
