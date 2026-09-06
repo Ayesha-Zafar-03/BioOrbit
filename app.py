@@ -132,39 +132,42 @@ header[data-testid="stHeader"] {{ display: none !important; }}
 }}
 
 /* ═══════════════════════════════════════════════════════════
-   SIDEBAR — fixed, no scroll
+   SIDEBAR — no scroll, stays in normal flow
    ═══════════════════════════════════════════════════════════ */
 
 [data-testid="stSidebar"] {{
     background: #0a101f !important;
     min-width: 240px !important;
     max-width: 240px !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    height: 100vh !important;
-    overflow: hidden !important;
-    z-index: 999;
 }}
 
-/* kill the inner scroll Streamlit adds */
-[data-testid="stSidebar"] > div,
-[data-testid="stSidebarContent"],
-section[data-testid="stSidebar"] > div:first-child {{
+/* The actual scrollable container Streamlit uses */
+[data-testid="stSidebar"] > div:first-child {{
+    overflow: hidden !important;
+    height: 100vh !important;
+}}
+
+/* The inner content wrapper — make it a flex column so footer pins to bottom */
+[data-testid="stSidebarContent"] {{
     overflow: hidden !important;
     height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
-    padding: 0 !important;
+    padding: 22px 14px 20px !important;
+    gap: 0 !important;
 }}
 
-/* inner wrapper we control */
-.sb-wrap {{
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding: 22px 14px 20px;
-    overflow: hidden;
+/* Streamlit wraps each element in a div — allow flex growth */
+[data-testid="stSidebarContent"] > div {{
+    flex-shrink: 0;
+}}
+
+/* kill scrollbar on any nested overflow */
+[data-testid="stSidebar"] * {{
+    scrollbar-width: none !important;
+}}
+[data-testid="stSidebar"] *::-webkit-scrollbar {{
+    display: none !important;
 }}
 
 /* ── brand ── */
@@ -648,25 +651,18 @@ with st.sidebar:
         else "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/2449px-NASA_logo.svg.png"
     )
 
+    # Brand block
     st.markdown(f"""
-    <div class="sb-wrap">
-
-      <!-- brand -->
-      <div class="sb-brand">
-        <div class="orbit-logo"><div class="orbit-dot"></div></div>
-        <div>
-          <div class="sb-name">BioOrbit</div>
-          <div class="sb-sub">NASA Space Biology<br>Research Explorer</div>
-        </div>
+    <div class="sb-brand">
+      <div class="orbit-logo"><div class="orbit-dot"></div></div>
+      <div>
+        <div class="sb-name">BioOrbit</div>
+        <div class="sb-sub">NASA Space Biology<br>Research Explorer</div>
       </div>
-
-      <!-- nav placeholder — buttons injected by Streamlit below -->
-      <div class="sb-nav" id="sb-nav-anchor"></div>
-
     </div>
     """, unsafe_allow_html=True)
 
-    # Nav buttons (Streamlit renders these after the HTML above)
+    # Nav buttons
     nav_items = [
         ("Dashboard",       "Home"),
         ("Search",          "Search"),
@@ -684,17 +680,15 @@ with st.sidebar:
         if active:
             st.markdown("</div>", unsafe_allow_html=True)
 
-    # Footer pinned via CSS margin-top auto trick — inject separately
+    # Spacer that pushes footer down
+    st.markdown("<div style='flex:1'></div>", unsafe_allow_html=True)
+
+    # Footer
     st.markdown(f"""
     <div class="sb-foot">
       <img class="sb-nasa" src="{nasa_src}">
-      <div class="sb-powered">
-        <b>Powered by NASA ADS</b><br>+ HuggingFace
-      </div>
-      <div class="sb-tag">
-        Making space biology research<br>
-        accessible and actionable through AI.
-      </div>
+      <div class="sb-powered"><b>Powered by NASA ADS</b><br>+ HuggingFace</div>
+      <div class="sb-tag">Making space biology research<br>accessible and actionable through AI.</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -708,7 +702,7 @@ if st.session_state.active_nav == "Dashboard":
         st.stop()
 
     # ── Hero + Stat Panel ────────────────────────────────
-    hc, sc = st.columns([3.5, 1.05], gap="medium")
+    hc, sc = st.columns([3.8, 1], gap="medium")
 
     with hc:
         st.markdown(f"""
