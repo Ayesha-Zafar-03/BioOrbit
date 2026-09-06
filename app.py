@@ -119,8 +119,13 @@ html, body, *, *::before, *::after {{
 
 /* ── chrome ── */
 #MainMenu, footer {{ visibility: hidden !important; }}
-.stDeployButton, [data-testid="stToolbar"] {{ display: none !important; }}
-header[data-testid="stHeader"] {{ display: none !important; }}
+.stDeployButton {{ display: none !important; }}
+[data-testid="stToolbar"] {{ display: none !important; visibility: hidden !important; }}
+[data-testid="stHeader"] {{ display: none !important; height: 0 !important; }}
+[data-testid="stDecoration"] {{ display: none !important; }}
+header {{ display: none !important; }}
+/* hide the top "keyboard_double_arrow_up" resize handle */
+[data-testid="collapsedControl"] {{ display: none !important; }}
 
 /* ── page bg ── */
 .stApp {{ background: #edf0f7 !important; }}
@@ -160,17 +165,12 @@ header[data-testid="stHeader"] {{ display: none !important; }}
     gap: 0 !important;
 }}
 
-/* every direct child block gets no extra margin */
+/* every direct child block */
 [data-testid="stSidebarContent"] > div {{
     width: 100% !important;
     flex-shrink: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
-}}
-
-/* the spacer div we inject — let it grow */
-[data-testid="stSidebarContent"] > div.sb-spacer-block {{
-    flex: 1 !important;
 }}
 
 /* ── brand header ── */
@@ -180,16 +180,14 @@ header[data-testid="stHeader"] {{ display: none !important; }}
     gap: 12px;
     padding: 22px 16px 18px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }}
-
 .orbit-logo {{
     width: 44px; height: 44px;
     border-radius: 50%;
     border: 2.5px solid #6d5fe6;
     display: flex; align-items: center; justify-content: center;
     position: relative; flex-shrink: 0;
-    background: transparent;
 }}
 .orbit-logo::before {{
     content: "";
@@ -207,11 +205,12 @@ header[data-testid="stHeader"] {{ display: none !important; }}
 .sb-name  {{ color:#fff; font-size:20px; font-weight:800; line-height:1.1; }}
 .sb-sub   {{ color:#5a6e88; font-size:10.5px; line-height:1.5; margin-top:4px; }}
 
-/* ── nav buttons ── */
-[data-testid="stSidebar"] .stButton {{
-    padding: 0 10px !important;
-    margin-bottom: 2px !important;
+/* ── nav item wrappers ── */
+.nav-item {{
+    padding: 2px 10px;
 }}
+
+/* ── every nav button base style ── */
 [data-testid="stSidebar"] .stButton > button {{
     background: transparent !important;
     border: none !important;
@@ -219,18 +218,18 @@ header[data-testid="stHeader"] {{ display: none !important; }}
     outline: none !important;
     border-radius: 9px !important;
     width: 100% !important;
-    padding: 11px 14px !important;
+    padding: 10px 14px !important;
     text-align: left !important;
     font-size: 13.5px !important;
     font-weight: 500 !important;
     color: #6b7e99 !important;
     display: flex !important;
     align-items: center !important;
-    gap: 10px !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
     transition: background .15s, color .15s !important;
     height: auto !important;
     line-height: 1.4 !important;
-    letter-spacing: 0 !important;
 }}
 [data-testid="stSidebar"] .stButton > button:hover {{
     background: rgba(99,102,241,0.13) !important;
@@ -242,67 +241,47 @@ header[data-testid="stHeader"] {{ display: none !important; }}
     outline: none !important;
     border: none !important;
 }}
-/* active nav highlight */
-.nav-active [data-testid="stSidebar"] .stButton > button {{
+
+/* active state */
+.nav-active .stButton > button {{
     background: linear-gradient(90deg, #3d35b8, #4f46e5) !important;
     color: #ffffff !important;
 }}
 
-/* ── nav icon images via nth-child on the stButton wrappers ──
-   Streamlit renders: brand-div | btn1 | btn2 | btn3 | btn4 | spacer | footer
-   The brand is a markdown div = child 1
-   Buttons are children 2-5 (but wrapped in divs by Streamlit)
-   We use background-image SVG data URIs on a ::before pseudo of each button ── */
-
-/* Home icon */
-[data-testid="stSidebarContent"] > div:nth-child(2) .stButton > button::before {{
+/* ── per-item SVG icons via ::before ── */
+/* Uses named wrapper classes: .nav-home, .nav-search, .nav-saved, .nav-about */
+.nav-home   .stButton > button::before,
+.nav-search .stButton > button::before,
+.nav-saved  .stButton > button::before,
+.nav-about  .stButton > button::before {{
     content: "";
     display: inline-block;
-    width: 16px; height: 16px; flex-shrink: 0;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7e99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Cpolyline points='9 22 9 12 15 12 15 22'/%3E%3C/svg%3E") center/contain no-repeat;
-    margin-right: 8px;
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    background: center/contain no-repeat;
+    opacity: 0.7;
     vertical-align: middle;
 }}
-.nav-active:nth-of-type(1) [data-testid="stSidebar"] .stButton > button::before,
-[data-testid="stSidebarContent"] > div:nth-child(2) .nav-active .stButton > button::before {{
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Cpolyline points='9 22 9 12 15 12 15 22'/%3E%3C/svg%3E");
-}}
+.nav-active .stButton > button::before {{ opacity: 1 !important; }}
 
-/* Search icon */
-[data-testid="stSidebarContent"] > div:nth-child(3) .stButton > button::before {{
-    content: "";
-    display: inline-block;
-    width: 16px; height: 16px; flex-shrink: 0;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7e99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") center/contain no-repeat;
-    margin-right: 8px;
-    vertical-align: middle;
+.nav-home .stButton > button::before {{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Cpolyline points='9 22 9 12 15 12 15 22'/%3E%3C/svg%3E");
 }}
-
-/* Saved Summaries icon */
-[data-testid="stSidebarContent"] > div:nth-child(4) .stButton > button::before {{
-    content: "";
-    display: inline-block;
-    width: 16px; height: 16px; flex-shrink: 0;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7e99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z'/%3E%3C/svg%3E") center/contain no-repeat;
-    margin-right: 8px;
-    vertical-align: middle;
+.nav-search .stButton > button::before {{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
 }}
-
-/* About icon */
-[data-testid="stSidebarContent"] > div:nth-child(5) .stButton > button::before {{
-    content: "";
-    display: inline-block;
-    width: 16px; height: 16px; flex-shrink: 0;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7e99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E") center/contain no-repeat;
-    margin-right: 8px;
-    vertical-align: middle;
+.nav-saved .stButton > button::before {{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z'/%3E%3C/svg%3E");
+}}
+.nav-about .stButton > button::before {{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
 }}
 
 /* ── sidebar footer ── */
 .sb-foot {{
     padding: 16px 16px 20px;
     border-top: 1px solid rgba(255,255,255,0.06);
-    margin-top: 4px;
 }}
 .sb-nasa  {{ width: 58px; height: auto; display: block; margin-bottom: 9px; }}
 .sb-pow   {{ font-size: 11px; color: #7a8fa8; line-height: 1.55; }}
@@ -792,27 +771,23 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Nav items with SVG icons in label ──
-    # Streamlit buttons accept plain text only, so we add a top-level
-    # CSS rule that injects icon pseudo-elements via data attributes,
-    # OR we use st.markdown divs around each button for active state.
+    # ── Nav items — each wrapped in a named div for reliable icon targeting ──
     nav_items = [
-        ("Dashboard",       "Home"),
-        ("Search",          "Search"),
-        ("Saved Summaries", "Saved Summaries"),
-        ("About",           "About"),
+        ("Dashboard",       "Home",            "nav-home"),
+        ("Search",          "Search",          "nav-search"),
+        ("Saved Summaries", "Saved Summaries", "nav-saved"),
+        ("About",           "About",           "nav-about"),
     ]
 
-    for page, label in nav_items:
+    for page, label, css_cls in nav_items:
         active = st.session_state.active_nav == page
-        if active:
-            st.markdown("<div class='nav-active'>", unsafe_allow_html=True)
+        active_cls = "nav-active" if active else ""
+        st.markdown(f"<div class='nav-item {css_cls} {active_cls}'>", unsafe_allow_html=True)
         clicked = st.button(label, key=f"nav_{page}", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
         if clicked:
             st.session_state.active_nav = page
             st.rerun()
-        if active:
-            st.markdown("</div>", unsafe_allow_html=True)
 
     # ── Spacer — pushes footer to bottom ──
     st.markdown(
