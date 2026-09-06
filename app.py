@@ -639,45 +639,65 @@ def generate_summary(article_id, abstract):
 # RENDER PAPER LIST
 # ============================================================
 
+def _paper_card_html(row):
+    """Return safe HTML for a single paper card (no injected variables that could break tags)."""
+    tags_html = "".join(
+        f'<span class="ptag">{t}</span>'
+        for t in (row.get("keywords") or []) if t
+    )
+    # Build link separately, never injected mid-tag
+    if row.get("link"):
+        link_part = (
+            f'<a class="ads-link" href="{row["link"]}" target="_blank">'
+            f'View on NASA ADS&#8203;</a>'
+        )
+    else:
+        link_part = '<span style="width:120px;display:inline-block;"></span>'
+
+    title   = str(row.get("title",   "") or "").replace("<", "&lt;").replace(">", "&gt;")
+    authors = str(row.get("authors", "") or "").replace("<", "&lt;").replace(">", "&gt;")
+    year    = str(row.get("year",    "") or "").replace("<", "&lt;").replace(">", "&gt;")
+
+    paper_ico = ICO["paper_ico"]
+
+    return (
+        '<div class="paper">'
+          '<div class="paper-row">'
+            f'<div class="paper-ico">{paper_ico}</div>'
+            '<div class="paper-body">'
+              f'<div class="paper-title">{title}</div>'
+              f'<div class="paper-meta">{authors} &nbsp;&middot;&nbsp; {year}</div>'
+              f'<div class="paper-tags">{tags_html}</div>'
+            '</div>'
+            f'{link_part}'
+          '</div>'
+        '</div>'
+    )
+
+
 def render_papers(df, key_prefix):
     for i, row in df.iterrows():
-        aid = hashlib.md5(row.title.encode()).hexdigest()
+        aid = hashlib.md5(str(row.get("title", i)).encode()).hexdigest()
 
-        tags_html = "".join(
-            f'<span class="ptag">{t}</span>'
-            for t in (row.get("keywords") or []) if t
-        )
-        link_html = (
-            f'<a class="ads-link" href="{row.link}" target="_blank">'
-            f'View on NASA ADS &nbsp;{ICO["external"]}</a>'
-            if row.link else ""
-        )
+        # Render paper card as its own isolated markdown block
+        st.markdown(_paper_card_html(row), unsafe_allow_html=True)
 
-        st.markdown(f"""
-        <div class="paper">
-            <div class="paper-row">
-                <div class="paper-ico">{ICO["paper_ico"]}</div>
-                <div class="paper-body">
-                    <div class="paper-title">{row.title}</div>
-                    <div class="paper-meta">{row.authors} &nbsp;·&nbsp; {row.year}</div>
-                    <div class="paper-tags">{tags_html}</div>
-                </div>
-                {link_html}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
+        # Expander below the card — completely separate Streamlit element
         with st.expander("Read Abstract & Summarize"):
-            st.write(row.abstract if row.abstract else "Abstract not available.")
+            abstract = row.get("abstract") or ""
+            st.write(abstract if abstract else "Abstract not available.")
+
             if st.button("Generate AI Summary", key=f"{key_prefix}_sum_{i}", type="primary"):
-                generate_summary(aid, row.abstract)
+                generate_summary(aid, abstract)
+
             if aid in st.session_state.summaries:
-                st.markdown(f"""
-                <div class="sum-box">
-                    <div class="sum-label">AI-Generated Summary</div>
-                    {st.session_state.summaries[aid]}
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="sum-box">'
+                    '<div class="sum-label">AI-Generated Summary</div>'
+                    + st.session_state.summaries[aid]
+                    + '</div>',
+                    unsafe_allow_html=True,
+                )
 
 # ============================================================
 # SIDEBAR
